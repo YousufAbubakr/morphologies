@@ -1,0 +1,485 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Grace O'Connell Biomechanics Lab, UC Berkeley Department of Mechanical
+% Engineering - Etchverry 2162
+%
+% Implementing a joint vertebra + disc --> spine visualizing procedure
+% using the vertebral geometries that have been pre-processed in 3D Slicer.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+clear
+clc
+
+set(0,'DefaultFigureWindowStyle','docked')
+warning('off','all')
+
+%% Importing segmentation measurement data
+
+% path of the segmentation measurement data:
+folderPath = "C:\Users\Grace O'connel 2\Desktop\yousuf\combinedSOP with width\measurement files";
+
+% loading all measurement data:
+direcPath = dir(fullfile(folderPath, '*.mat'));
+for i = 1:length(direcPath)
+    baseFileName = direcPath(i).name;
+    fullFileName = fullfile(folderPath, baseFileName);
+
+    load(fullFileName) % loading .mat file
+end
+
+% vertebra processing loop:
+for ii = 1:length(subjects)
+    subj = subjects{ii}; % subject name
+    for jj = 1:numLevels(ii)
+        fullPath = levelPaths{ii}{jj};
+
+        % Extract the file name
+        [filePath, fileName, ext] = fileparts(fullPath);
+
+        % Extract the subject name
+        [~, subjName, subjExt] = fileparts(filePath);
+        
+        % Combine file name and extension
+        fileNameWithExt = [fileName, ext];
+
+        % renaming file position:
+        newRepo = "C:\Users\Grace O'connel 2\Desktop\yousuf\segmentation exports";
+        levelPaths{ii}{jj} = newRepo + "\" + subjName + "\" + fileNameWithExt;
+    end
+end
+
+%% Segmentation repository processing
+
+% number of discs adjustment:
+numDiscLevels = numLevels - 1;
+numDiscLevelsAct = zeros(size(numDiscLevels)); % actual number of discs in each subject
+
+% disc processing loop:
+for ii = 1:length(subjects)
+    subj = subjects{ii}; % subject name
+    for jj = 1:numDiscLevels(ii)
+        % disc segmentation information
+        Iinf = jj + 1; % index of inferior vertebra
+        Isup = jj; % index of superior vertebra
+        infLvl = levels{ii}{Iinf}; % inferior vertebral level name
+        supLvl = levels{ii}{Isup}; % superior vertebral level name
+
+        % disc level processing
+        vertebraPair = [supLvl, '-', infLvl];
+        indPair = extract([infLvl, supLvl], digitsPattern); % levels of vertebra pair
+        diffLevel = abs(str2double(indPair{2}) - str2double(indPair{1})); % interval space in between vertebra pair
+
+        % given the disc space is valid, we can now process the disc geometry
+        if diffLevel == 1 || strcmp(vertebraPair, 'T15-L1')
+            numDiscLevelsAct(ii) = numDiscLevelsAct(ii) + 1; % adjusting disc level counter
+        end
+    end
+end
+
+% paths of all disc segmentation geometries:
+discLevelNames = cell(length(subjects), 1); % level names of all disc levels in each subject spine
+discPaths = cell(length(subjects), 1); % path names of all disc levels in each subject spine
+alphas = cell(length(subjects), 1); % alphas of all disc levels in each subject spine
+for ii = 1:length(subjects)
+    discLevelNames{ii} = cell(numDiscLevelsAct(ii), 1);
+    discPaths{ii} = cell(numDiscLevelsAct(ii), 1);
+    alphas{ii} = cell(numDiscLevelsAct(ii), 1);
+end
+
+% updating names and paths of all disc segmentation geometries:
+for ii = 1:length(subjects)
+    subj = subjects{ii}; % subject name
+    for jj = 1:numDiscLevels(ii)
+        % disc segmentation information
+        Iinf = jj + 1; % index of inferior vertebra
+        Isup = jj; % index of superior vertebra
+        infLvl = levels{ii}{Iinf}; % inferior vertebral level name
+        supLvl = levels{ii}{Isup}; % superior vertebral level name
+
+        % disc level processing
+        vertebraPair = [supLvl, '-', infLvl];
+        indPair = extract([infLvl, supLvl], digitsPattern); % levels of vertebra pair
+        diffLevel = abs(str2double(indPair{2}) - str2double(indPair{1})); % interval space in between vertebra pair
+
+        % given the disc space is valid, we can now process the disc geometry
+        if diffLevel == 1 || strcmp(vertebraPair, 'T15-L1')
+            % file information for disc surface mesh data .stl file:
+            fileName = [vertebraPair, '.stl'];
+            folderPath = "C:\Users\Grace O'connel 2\Desktop\yousuf\spineSOP\discExports";
+            subjectFolderPath = fullfile(folderPath, subj);
+            discSubjectFolderPath = char(fullfile(subjectFolderPath, fileName));
+
+            % updating variables:
+            empty_indices_paths = find(cellfun(@isempty, discPaths{ii})); % finding the indices of all empty cells
+            first_empty_index_paths = empty_indices_paths(1);
+            discPaths{ii}{first_empty_index_paths} = discSubjectFolderPath;
+
+            % naming disc level:
+            empty_indices = find(cellfun(@isempty, discLevelNames{ii})); % finding the indices of all empty cells
+            first_empty_index = empty_indices(1);
+            discLevelNames{ii}{first_empty_index} = vertebraPair;
+        end
+    end
+end
+
+%% Storage array processing
+
+% 3D measurements storage:
+volDiscs = cell(length(subjects), 1); % volume of each disc
+surfareaDiscs = cell(length(subjects), 1); % surface area of each disc
+discWedges = cell(length(subjects), 1); % disc wedge degrees of each disc
+areaDiscInfs = cell(length(subjects), 1); % inferior surface areas of each disc
+areaDiscSups = cell(length(subjects), 1); % superior surface areas of each disc
+normDiscInfs = cell(length(subjects), 1); % net normal vector of inferior surface of each disc
+normDiscSups = cell(length(subjects), 1); % net normal vector of superior surface of each disc
+pointDiscPlotInfs = cell(length(subjects), 1); % position of normal vector of inferior surface of each disc
+pointDiscPlotSups = cell(length(subjects), 1); % position of normal vector of superior surface of each disc
+
+% mapping each subject's levels to the storage matrices:
+for ii = 1:length(subjects)
+    % constructing 3D measurement storage matrices:
+    volDiscs{ii} = cell(numDiscLevelsAct(ii), 1); % volume of subject ii
+    surfareaDiscs{ii} = cell(numDiscLevelsAct(ii), 1); % surface area of subject ii
+    discWedges{ii} = cell(numDiscLevelsAct(ii), 1); % disc wedge degrees area of subject ii
+    areaDiscInfs{ii} = cell(numDiscLevelsAct(ii), 1); % inferior surface area of subject ii
+    areaDiscSups{ii} = cell(numDiscLevelsAct(ii), 1); % superior surface area of subject ii
+    normDiscInfs{ii} = cell(numDiscLevelsAct(ii), 1); % net normal vector of inferior surface of subject ii
+    normDiscSups{ii} = cell(numDiscLevelsAct(ii), 1); % net normal vector of superior surface of subject ii
+    pointDiscPlotInfs{ii} = cell(numDiscLevelsAct(ii), 1); % position of normal vector of inferior surface of subject ii
+    pointDiscPlotSups{ii} = cell(numDiscLevelsAct(ii), 1); % position of normal vector of superior surface of subject ii
+end
+
+%% Disc geometry exporting
+% Disc surface processing is slightly different from vertebra surface
+% processing. Disc surface modeling requires the inferior surface of one
+% vertebra and the superior surface of another vertebra.
+
+% disc surface measurement loop:
+makeexport = true;
+if makeexport
+    for ii = 1:length(subjects)
+        subj = subjects{ii}; % subject name
+        for jj = 1:numDiscLevels(ii)
+            % disc segmentation information
+            Iinf = jj + 1; % index of inferior vertebra
+            Isup = jj; % index of superior vertebra
+            infLvl = levels{ii}{Iinf}; % inferior vertebral level name
+            supLvl = levels{ii}{Isup}; % superior vertebral level name
+            infLvlPath = levelPaths{ii}{Iinf}; % inferior vertebral level path name
+            supLvlPath = levelPaths{ii}{Isup}; % superior vertebral level path name
+    
+            % disc level processing
+            vertebraPair = [supLvl, '-', infLvl];
+            indPair = extract([infLvl, supLvl], digitsPattern); % levels of vertebra pair
+            diffLevel = abs(str2double(indPair{2}) - str2double(indPair{1})); % interval space in between vertebra pair
+    
+            % transformation properties:
+            RicpInf = Ricps{ii}{Iinf};
+            RicpSup = Ricps{ii}{Isup};
+            TicpInf = Ticps{ii}{Iinf};
+            TicpSup = Ticps{ii}{Isup};
+            c1Inf = c1s{ii}{Iinf};
+            c1Sup = c1s{ii}{Isup};
+            c2Inf = c2s{ii}{Iinf};
+            c2Sup = c2s{ii}{Isup};
+    
+            % given the disc space is valid, we can now process the disc geometry
+            if diffLevel == 1  || strcmp(vertebraPair, 'T15-L1')
+                % inferior and superior transformed coordinates:
+                infPt = Pts{ii}{Iinf}; 
+                supPt = Pts{ii}{Isup};
+    
+                % inferior and superior original coordinates:
+                infPo = Ps{ii}{Iinf}; 
+                supPo = Ps{ii}{Isup};
+    
+                % inferior and superior disc landmark selection variables
+                PVInfVertSupPlane = supPVs{ii}{Iinf}; % vertices that describe superior surface boundary plane of vertebra Iinf
+                PVSupVertInfPlane = infPVs{ii}{Isup}; % vertices that describe inferior surface boundary plane of vertebra Isup
+                
+                % measure disc surfaces
+                exportDiscGeometry; % writes disc geometries to .stl file
+            end
+    
+            clc; % clearing command window
+        end
+    end
+end
+
+%% Disc cross sectional area measurement processing
+
+% disc volume and total surface area measurement loop:
+for ii = 1:length(subjects)
+    subj = subjects{ii}; % subject name
+    for jj = 1:numDiscLevelsAct(ii)
+        discFilePath = discPaths{ii}{jj};
+
+        % measure disc volume and surface area
+        loadDisc; % returns Pc, c1, and P; centered geometry, translation vector, and original geometry
+
+        % updating intermediate values:
+        Ps{ii}{jj} = P;
+        Pts{ii}{jj} = Pt;
+        Ricps{ii}{jj} = Ricp;
+        Ticps{ii}{jj} = Ticp;
+        c1s{ii}{jj} = c1;
+        c2s{ii}{jj} = c2;
+        infPVs{ii}{jj} = infPV;
+        supPVs{ii}{jj} = supPV;
+
+        clc; % clearing command window
+    end
+end
+
+%% Disc wedging measurements
+
+% disc wedging measurement loop:
+for ii = 1:length(subjects)
+    subj = subjects{ii}; % subject name
+    for jj = 1:numDiscLevels(ii)
+        % disc segmentation information
+        Iinf = jj + 1; % index of inferior vertebra
+        Isup = jj; % index of superior vertebra
+        infLvl = levels{ii}{Iinf}; % inferior vertebral level name
+        supLvl = levels{ii}{Isup}; % superior vertebral level name
+        infLvlPath = levelPaths{ii}{Iinf}; % inferior vertebral level path name
+        supLvlPath = levelPaths{ii}{Isup}; % superior vertebral level path name
+
+        % disc level processing
+        vertebraPair = [supLvl, '-', infLvl];
+        indPair = extract([infLvl, supLvl], digitsPattern); % levels of vertebra pair
+        diffLevel = abs(str2double(indPair{2}) - str2double(indPair{1})); % interval space in between vertebra pair
+
+        % given the disc space is valid, we can now process the disc geometry
+        if diffLevel == 1  || strcmp(vertebraPair, 'T15-L1')
+            % inferior normal vector:
+            empty_indices_normInf = find(cellfun(@isempty, normDiscInfs{ii})); % finding the indices of all empty cells
+            first_empty_index_normInf = empty_indices_normInf(1);
+            normalDiscInf = -normSups{ii}{Iinf};
+            normDiscInfs{ii}{first_empty_index_normInf} = normalDiscInf;
+            
+            % superior normal vector:
+            empty_indices_normSup = find(cellfun(@isempty, normDiscSups{ii})); % finding the indices of all empty cells
+            first_empty_index_normSup = empty_indices_normSup(1);
+            normalDiscSup = -normInfs{ii}{Isup};
+            normDiscSups{ii}{first_empty_index_normSup} = normalDiscSup;
+
+            % position of inferior normal vector:
+            empty_indices_inf = find(cellfun(@isempty, pointDiscPlotInfs{ii})); % finding the indices of all empty cells
+            first_empty_index_inf = empty_indices_inf(1);
+            pointDiscPlotInfs{ii}{first_empty_index_inf} = pointPlotSups{ii}{Iinf};
+
+            % position of superior normal vector:
+            empty_indices_sup = find(cellfun(@isempty, pointDiscPlotSups{ii})); % finding the indices of all empty cells
+            first_empty_index_sup = empty_indices_sup(1);
+            pointDiscPlotSups{ii}{first_empty_index_sup} = pointPlotInfs{ii}{Isup};
+
+            % determining disc wedging:
+            cos_theta = dot(normalDiscSup, -normalDiscInf) / (norm(normalDiscSup) * norm(normalDiscInf));
+            wedge_rad = acos(cos_theta); % angle in radians
+            wedge_deg = rad2deg(wedge_rad); % angle in degrees
+
+            empty_indices_wedge = find(cellfun(@isempty, discWedges{ii})); % finding the indices of all empty cells
+            first_empty_index_wedge = empty_indices_wedge(1);
+            discWedges{ii}{first_empty_index_wedge} = wedge_deg;
+        end
+
+        clc; % clearing command window
+    end
+end
+
+%% Disc volume and total surface area measurements
+
+% disc volume and total surface area measurement loop:
+for ii = 1:length(subjects)
+    subj = subjects{ii}; % subject name
+    for jj = 1:numDiscLevelsAct(ii)
+        filePath = discPaths{ii}{jj};
+
+        % measure disc volume and surface area
+        measureDisc3D; % returns vol, surfarea
+
+        % updating measurements; ii = subject, jj = level
+        volDiscs{ii}{jj} = vol;
+        surfareaDiscs{ii}{jj} = surfarea;
+
+        clc; % clearing command window
+    end
+end
+
+%% Visualizing disc levels
+
+% number of figures:
+nfigs = length(subjects);
+
+% plotting all subjects' discs levels:
+makeplot = false;
+if makeplot
+    for ii = 1:nfigs
+        subjName = subjects{ii}; % subject name of subject ii
+        numDiscLevel = numDiscLevelsAct(ii); % number of levels of subject ii
+    
+        % initializing figure features:
+        figure
+        hold on
+        axis equal
+        view(3)
+        xlabel('X'); ylabel('Y'); zlabel('Z')
+        title("Disc levels of subject " + subjName)
+    
+        % reading and plotting .stl geometries:
+        for jj = 1:numDiscLevel
+            filePath = discPaths{ii}{jj}; % path of disc level segmentation .stl file
+
+            % getting normal vectors:
+            infNorm = normDiscInfs{ii}{jj};
+            supNorm = normDiscSups{ii}{jj};
+
+            % getting position of normal vectors:
+            infPointPlot = pointDiscPlotInfs{ii}{jj};
+            supPointPlot = pointDiscPlotSups{ii}{jj};
+
+            % creating a grid of (x, y) points
+            sideLength = 20;
+            [xGridInf, yGridInf] = meshgrid(linspace(infPointPlot(:,1)-sideLength, infPointPlot(:,1)+sideLength, sideLength), ...
+                                            linspace(infPointPlot(:,2)-sideLength, infPointPlot(:,2)+sideLength, sideLength));
+            [xGridSup, yGridSup] = meshgrid(linspace(supPointPlot(:,1)-sideLength, supPointPlot(:,1)+sideLength, sideLength), ...
+                                            linspace(supPointPlot(:,2)-sideLength, supPointPlot(:,2)+sideLength, sideLength));
+    
+            % plane equation: solving for z
+            aInf = infNorm(1); bInf = infNorm(2); cInf = infNorm(3);
+            zGridInf = ( -aInf*(xGridInf - infPointPlot(1)) - bInf*(yGridInf - infPointPlot(2)) ) / cInf + infPointPlot(3);
+            aSup = supNorm(1); bSup = supNorm(2); cSup = supNorm(3);
+            zGridSup = ( -aSup*(xGridSup - supPointPlot(1)) - bSup*(yGridSup - supPointPlot(2)) ) / cSup + supPointPlot(3);
+    
+            % reading .stl geometry:
+            [TR, ~, ~, ~] = stlread(filePath);  % returns faces (f), vertices (v)
+    
+            v = TR.Points; % Nx3 matrix of vertices
+            f = TR.ConnectivityList; % Mx3 matrix of triangle vertex indices
+    
+            % plotting .stl geometry:
+            patch('Faces', TR.ConnectivityList, ...
+                  'Vertices', TR.Points, ...
+                  'FaceColor', rand(1,3), ...
+                  'EdgeColor', 'none');
+            surf(xGridInf, yGridInf, zGridInf, 'FaceColor', [1 1 0], 'EdgeColor', 'none')
+            surf(xGridSup, yGridSup, zGridSup, 'FaceColor', [1 1 0], 'EdgeColor', 'none')
+            qInf = quiver3(infPointPlot(:,1), infPointPlot(:,2), infPointPlot(:,3), ...
+                        infNorm(:,1), infNorm(:,2), infNorm(:,3), 6, 'r', 'LineWidth', 3);
+            qInf.MaxHeadSize = 3;
+            qSup = quiver3(supPointPlot(:,1), supPointPlot(:,2), supPointPlot(:,3), ...
+                        supNorm(:,1), supNorm(:,2), supNorm(:,3), 6, 'r', 'LineWidth', 3);
+            qSup.MaxHeadSize = 3;
+        end
+        
+        camlight;
+        lighting gouraud;
+        view(90, 0) % YZ plane
+        drawnow;
+    end
+end
+
+%% Visualizing vertebrae + disc levels
+
+% number of figures:
+nfigs = length(subjects);
+
+% plotting all subjects' discs levels:
+makeplot = true;
+if makeplot
+    for ii = 1:nfigs
+        % plotting discs for subject ii
+        subjName = subjects{ii}; % subject name of subject ii
+        numDiscLevel = numDiscLevelsAct(ii); % number of levels of subject ii
+    
+        % initializing figure features:
+        figure
+        hold on
+        axis equal
+        view(3)
+        xlabel('X'); ylabel('Y'); zlabel('Z')
+        title("Spine of subject " + subjName)
+    
+        % reading and plotting .stl geometries:
+        for jj = 1:numDiscLevel
+            filePath = discPaths{ii}{jj}; % path of disc level segmentation .stl file
+
+            % getting normal vectors:
+            infNorm = normDiscInfs{ii}{jj};
+            supNorm = normDiscSups{ii}{jj};
+
+            % getting position of normal vectors:
+            infPointPlot = pointDiscPlotInfs{ii}{jj};
+            supPointPlot = pointDiscPlotSups{ii}{jj};
+
+            % creating a grid of (x, y) points
+            sideLength = 20;
+            [xGridInf, yGridInf] = meshgrid(linspace(infPointPlot(:,1)-sideLength, infPointPlot(:,1)+sideLength, sideLength), ...
+                                            linspace(infPointPlot(:,2)-sideLength, infPointPlot(:,2)+sideLength, sideLength));
+            [xGridSup, yGridSup] = meshgrid(linspace(supPointPlot(:,1)-sideLength, supPointPlot(:,1)+sideLength, sideLength), ...
+                                            linspace(supPointPlot(:,2)-sideLength, supPointPlot(:,2)+sideLength, sideLength));
+    
+            % plane equation: solving for z
+            aInf = infNorm(1); bInf = infNorm(2); cInf = infNorm(3);
+            zGridInf = ( -aInf*(xGridInf - infPointPlot(1)) - bInf*(yGridInf - infPointPlot(2)) ) / cInf + infPointPlot(3);
+            aSup = supNorm(1); bSup = supNorm(2); cSup = supNorm(3);
+            zGridSup = ( -aSup*(xGridSup - supPointPlot(1)) - bSup*(yGridSup - supPointPlot(2)) ) / cSup + supPointPlot(3);
+    
+            % reading .stl geometry:
+            [TR, ~, ~, ~] = stlread(filePath);  % returns faces (f), vertices (v)
+    
+            v = TR.Points; % Nx3 matrix of vertices
+            f = TR.ConnectivityList; % Mx3 matrix of triangle vertex indices
+    
+            % plotting .stl geometry:
+            patch('Faces', TR.ConnectivityList, ...
+                  'Vertices', TR.Points, ...
+                  'FaceColor', rand(1,3), ...
+                  'EdgeColor', 'none');
+            surf(xGridInf, yGridInf, zGridInf, 'FaceColor', [1 1 0], 'EdgeColor', 'none')
+            surf(xGridSup, yGridSup, zGridSup, 'FaceColor', [1 1 0], 'EdgeColor', 'none')
+        end
+        
+        % plotting vertebrae for subject ii
+        numVertLevel = numLevels(ii); % number of levels of subject ii
+    
+        % reading and plotting .stl geometries:
+        for jj = 1:numVertLevel
+            filePath = levelPaths{ii}{jj}; % path of vertebral level segmentation .stl file
+    
+            % reading .stl geometry:
+            [TR, ~, ~, ~] = stlread(filePath);  % returns faces (f), vertices (v)
+    
+            v = TR.Points; % Nx3 matrix of vertices
+            f = TR.ConnectivityList; % Mx3 matrix of triangle vertex indices
+    
+            % plotting .stl geometry:
+            patch('Faces', TR.ConnectivityList, ...
+                  'Vertices', TR.Points, ...
+                  'FaceColor', rand(1,3), ...
+                  'EdgeColor', 'none');          
+        end
+                       
+        camlight;
+        lighting gouraud;
+        view(90, 0) % YZ plane
+        drawnow;
+    end
+end
+
+%% Exporting measurements
+
+% measurement folder file path:
+measurePath = "C:\Users\Grace O'connel 2\Desktop\yousuf\spineSOP\measurement files";
+
+% subject properties:
+save(append(measurePath, '\', 'subjects.mat'), 'subjects');
+
+% disc geometry properties:
+save(append(measurePath, '\', 'discLevelNames.mat'), 'discLevelNames');
+
+% 3D variables:
+save(append(measurePath, '\', 'volDiscs.mat'), 'volDiscs');
+save(append(measurePath, '\', 'surfareaDiscs.mat'), 'surfareaDiscs');
+save(append(measurePath, '\', 'discWedges.mat'), 'discWedges');
