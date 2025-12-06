@@ -20,7 +20,7 @@ warning('off','all')
 % Unless otherwise stated, dimensions are in mm
 
 % path of the segmentation measurement data:
-folderPath = "C:\Users\16233\Desktop\grad\projects\scoliosis\subject measurements\matlabSOPs\spineSOP\measurement files";
+folderPath = "C:\Users\yousuf\Desktop\grad\projects\imaging\protocols\discs\measurements";
 
 % loading all measurement data:
 direcPath = dir(fullfile(folderPath, '*.mat'));
@@ -503,7 +503,7 @@ end
 %% Exporting summary arrays
 
 % exporting measurement summary arrays:
-exportPath = "C:\Users\16233\Desktop\grad\projects\scoliosis\subject measurements\subject statistical modeling\disc measurement summaries";
+exportPath = "C:\Users\yousuf\Desktop\grad\projects\imaging\protocols\statistics\disc-summary";
 filePath = append(exportPath, '\', 'summary_arrays.mat');
 save(filePath, 'area_ca_summary', 'area_ka_summary', 'area_cb_summary', 'area_kb_summary', ...
                 'hap_ca_summary', 'hap_ka_summary', 'hap_cb_summary', 'hap_kb_summary', ...

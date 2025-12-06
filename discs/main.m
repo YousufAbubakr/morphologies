@@ -24,7 +24,7 @@ nh = 1000; % # of height measurements
 %% Importing segmentation measurement data
 
 % path of the segmentation measurement data:
-folderPath = "C:\Users\16233\Desktop\grad\projects\scoliosis\subject measurements\matlabSOPs\combinedSOP with width\measurement files";
+folderPath = "C:\Users\yousuf\Desktop\grad\projects\imaging\protocols\vertebrae\measurements";
 
 % loading all measurement data:
 direcPath = dir(fullfile(folderPath, '*.mat'));
@@ -92,7 +92,7 @@ for ii = 1:length(subjects)
         if diffLevel == 1 || strcmp(vertebraPair, 'T15-L1')
             % file information for disc surface mesh data .stl file:
             fileName = [vertebraPair, '.stl'];
-            folderPath = "C:\Users\16233\Desktop\grad\projects\scoliosis\subject measurements\matlabSOPs\spineSOP\discExports";
+            folderPath = "C:\Users\yousuf\Desktop\grad\projects\imaging\protocols\discs\disc-stls";
             subjectFolderPath = fullfile(folderPath, subj);
             discSubjectFolderPath = char(fullfile(subjectFolderPath, fileName));
 
@@ -618,7 +618,7 @@ end
 %% Exporting measurements
 
 % measurement folder file path:
-measurePath = "C:\Users\16233\Desktop\grad\projects\scoliosis\subject measurements\matlabSOPs\spineSOP\measurement files";
+measurePath = "C:\Users\yousuf\Desktop\grad\projects\imaging\protocols\discs\measurements";
 
 % subject properties:
 save(append(measurePath, '\', 'subjects.mat'), 'subjects');

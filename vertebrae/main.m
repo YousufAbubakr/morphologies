@@ -22,7 +22,7 @@ nk = 200; % # of icp iterations
 nh = 1000; % # of height measurements
 
 % additional paths:
-addpath('references');
+addpath('refs');
 
 % reference geometries:
 references = {'ref_658_T4_final', 'ref_658_T11_final', 'ref_658_L3_final'};
@@ -30,7 +30,7 @@ references = {'ref_658_T4_final', 'ref_658_T11_final', 'ref_658_L3_final'};
 %% Segmentation repository processing
 
 % path to segmentation repo:
-folderPath = "C:\Users\16233\Desktop\grad\projects\scoliosis\subject measurements\subject 3d slicer files\segmentation exports";
+folderPath = "C:\Users\yousuf\Desktop\grad\projects\imaging\protocols\vertebra-stls";
 
 % extracting repository details:
 folderPathProps = dir(fullfile(folderPath,'*')); % folderPath properties
@@ -354,7 +354,7 @@ end
 %% Exporting measurements
 
 % measurement folder file path:
-measurePath = "C:\Users\16233\Desktop\grad\projects\scoliosis\subject measurements\matlabSOPs\combinedSOP with width\measurement files";
+measurePath = "C:\Users\yousuf\Desktop\grad\projects\imaging\protocols\vertebrae\measurements";
 
 % height variables:
 save(append(measurePath, '\', 'heightAP.mat'), 'hAPs');

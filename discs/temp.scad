@@ -1,5 +1,5 @@
 difference(){
-	import("C:/Users/16233/Desktop/grad/projects/scoliosis/subject measurements/matlabSOPs/spineSOP/discExports/779c/L5-L6.stl");
-	import("C:/Users/16233/Desktop/grad/projects/scoliosis/subject measurements/subject 3d slicer files/segmentation exports/779c/Segmentation_779_L5.stl");
-	import("C:/Users/16233/Desktop/grad/projects/scoliosis/subject measurements/subject 3d slicer files/segmentation exports/779c/Segmentation_779_L6.stl");
+	import("C:/Users/yousuf/Desktop/grad/projects/imaging/protocols/discs/disc-stls/643c/L1-L2.stl");
+	import("C:/Users/yousuf/Desktop/grad/projects/imaging/vertebra-stls/643c/Segmentation_643_L1.stl");
+	import("C:/Users/yousuf/Desktop/grad/projects/imaging/vertebra-stls/643c/Segmentation_643_L2.stl");
 }

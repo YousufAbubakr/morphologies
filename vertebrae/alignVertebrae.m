@@ -54,20 +54,6 @@ model.vertices = Pt; % updating 'model' object
 % defining c2 translation vector:
 c2 = c;
 
-%% Exporting transformations
-
-% exporting post-alignment geometry into a new .stl file:
-makeexport = false;
-if makeexport
-    % exporting specific vertebra levels:
-    if ((i-1)*length(levels) + j == 12) || ((i-1)*length(levels) + j == 22) || ((i-1)*length(levels) + j == 39)
-        folderpath = "C:\Users\16233\Desktop\grad\projects\scoliosis\subject measurements\matlabSOPs\heightValidaiton\";
-        stlpath = append(folderpath, "Segmentation_", subj, "_", lvl, "_transformed.stl");
-        TR = triangulation(model.faces, model.vertices);
-        stlwrite(TR, stlpath, 'text')
-    end
-end
-
 %% Visualizing transformations
 
 % plotting pre- and post-alignment geometry:
