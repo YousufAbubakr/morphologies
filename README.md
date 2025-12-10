@@ -26,13 +26,14 @@ git clone https://github.com/YousufAbubakr/morphologies.git
 ## Repository Setup
 ```
 📦morphoogies
- ┣ 📂results
- ┣ 📂source-code
+ ┣ 📂pipeline                ← end-to-end workflow for processing vertebral and disc morphology data
+ ┣ 📂results                 ← output files, figures, exported meshes, etc.
+ ┣ 📂src                     ← utility, analysis, and vertebrae/disc codes
  ┃ ┣ 📂analysis
  ┃ ┣ 📂disc
  ┃ ┣ 📂utils
  ┃ ┣ 📂vertebra
- ┣ 📂stl-geometries
+ ┣ 📂stl-geometries          ← source .stl geometry data
  ┃ ┣ 📂disc-stls
  ┃ ┃ ┣ 📂Subject A
  ┃ ┃ ┃ ┣ 📜L1-L2.stl
@@ -43,6 +44,6 @@ git clone https://github.com/YousufAbubakr/morphologies.git
  ┃ ┃ ┃ ┣ 📜L1.stl
  ┃ ┃ ┃ ┣ 📜L2.stl
  ┃ ┃ ┃ ┣ ...
- ┣ 📜.gitattributes
- ┗ 📜README.md
+ ┣ 📜.gitattributes          ← to ignore large / binary / generated files
+ ┗ 📜README.md               ← project overview, how to run, etc.
 ```

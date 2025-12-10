@@ -11,23 +11,33 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-clear; clc;
+clear; clc; % clearing command window
 
 set(0,'DefaultFigureWindowStyle','docked') % docking figures
 warning('off','all') % turning off warnings
 
+format compact; % suppressing blank lines and decreasing spacing in the CW
+
 %% DIRECTORY INFORMATION
 % storing names of all necessary directories
+%
+% ASSUMPTION: directories are configured according to setup described in 
+% the README.md file at the head of the repo.
 
 projectPath = fileparts(pwd); % morphologies repo path
 
-sourceDir = 'src'; % name of source code directory
-sourcePath = fullfile(projectPath, sourceDir); % source code path
+% Getting paths of vertebral and disc stl files:
+stlDir = 'stl-geometries'; % name of stl geometry directory
+vertDir = 'vertebra-stls'; % name of vertebrae geometry directory
+discDir = 'disc-stls'; % name of disc geometry directory
+
+stlPath = fullfile(projectPath, stlDir); % stl geometry path
+vertPath = fullfile(stlPath, vertDir); % vertebrae geometry path
+discPath = fullfile(stlPath, discDir); % disc geometry path
 
 %% SUBJECT INFORMATION
-% initializing subject data structures, according to the following format
-% -->
-% 
+% initializing the porcine subject data structure
+ 
 % subjects is a structure array that stores the necessary data associated
 % with each subject, as such:
 %       subjects(1). ...
@@ -38,7 +48,6 @@ sourcePath = fullfile(projectPath, sourceDir); % source code path
 % following fields and subfields:
 %     ┣ subjects(i).name = "..."
 %     ┣ subjects(i).isKyphotic = boolean
-%     ┣ subjects(i).folderPath = '...'
 %     ┣ subjects(i).vertebrae
 %               ┣ .vertebrae.levelNames
 %               ┣ .vertebrae.levelPaths
@@ -62,12 +71,21 @@ sourcePath = fullfile(projectPath, sourceDir); % source code path
 % some information to get us started. 
 % 
 % ASSUMPTION: the data is structured such that each subject has a unique 
-% 3-digit name and kyphotic state associated with it.
-% 
-% Therefore, we construct a dictionary of the subjects' names and their 
-% associated kypthotic state:
-subjectsDictKeys = ["643", "658", "660", "665", "666", "717", "723", ...
+% 3-digit name and kyphotic state associated with it. Therefore, we
+% classify these subject datas here:
+subjectNames = ["643", "658", "660", "665", "666", "717", "723", ...
                         "735", "743", "764", "765", "766", "778", "779"];
-subjectsDictVals = [false, true, true, true, true, false, false, ...
+subjectStates = [false, true, true, true, true, false, false, ...
                         false, false, false, true, true, false, false];
-subjectsDict = containers.Map(subjectsDictKeys, subjectsDictVals);
+
+% Initializing subjects structure, with names and states:
+subjects = struct('name', num2cell(subjectNames), 'isKyphotic', num2cell(subjectStates));
+
+% Next, we describe the file paths, level names, and number of levels
+% associated with each subjects' vertebrae and discs and append this
+% information into subjects.
+
+% UNDER CONSTRUCTION -->
+% [develop procedure that automates filling in the file path locations for
+% the vertebrae and disc files. Disc file paths can be deterministically
+% found based on the vertebrae files.]
