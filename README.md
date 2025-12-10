@@ -1,5 +1,5 @@
 # Morphologies
-**Author:** Yousuf Abubakr ([yousufabubakr123@berkeley.edu](yousufabubakr123@berkeley.edu))
+**Author:** Yousuf Abubakr (yousufabubakr123@berkeley.edu)
 
 **Lab:** Grace D. O’Connell Lab ([https://oconnell.berkeley.edu/](https://oconnell.berkeley.edu/))
 
