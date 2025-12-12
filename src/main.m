@@ -136,7 +136,7 @@ measuredSubjects = "all";
 % levels associated with each subjects' vertebrae and discs given the
 % user-defined settings and append this information into 'subjects' using
 % the following subroutine:
-setSubjectInformation; % returns 'subject', 'subjectNames', 'subjectStates'
+setSubjectInformation; % returns 'subject', 'subjectStates'
 
 % Contructing 'subjectData' struct with global subject properties and
 % already-contructed 'subject' struct:

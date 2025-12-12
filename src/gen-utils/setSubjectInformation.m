@@ -87,7 +87,7 @@ end
 % Deleting extraneous subroutine variables:
 varsafter = who; % get names of all variables in 'varsbefore' plus variables
 varsremove = setdiff(varsafter, varsbefore); % variables  defined in the script
-varskeep = {'subjectNames', 'subjectStates', 'subject'};
+varskeep = {'subjectStates', 'subject'};
 varsremove(ismember(varsremove, varskeep)) = {''};
 clear(varsremove{:})
 
