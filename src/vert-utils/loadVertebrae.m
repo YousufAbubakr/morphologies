@@ -5,7 +5,7 @@
 % File: loadVertebrae.m
 % Author: Yousuf Abubakr
 % Project: Morphologies
-% Last Updated: 12-12-2025
+% Last Updated: 12-14-2025
 %
 % Description: loading and characterizing stl properties from the vertebral
 % body mesh geometries 
@@ -37,12 +37,17 @@ for i = 1:n
     % Extracting mesh properties of ith subject's vertebrae:
     meshes = loadSTLCollection(levelPaths, levelNames, subjectName);
 
+    % Building centerline-based SI axes:
+    meshes = computeSpineAxes(meshes);
+
     % Appending metadata into 'subjectData'
     subjectData.subject(i).vertebrae.mesh = meshes;
 end
 
 %% VISUALIZATION
 % Plotting each subjects' vertebral bodies
+
+showSubjectVertebrae = cfg.plot.showSubjectVertebrae; % getting config settings
 
 % Skipping visualization if 'showSubjectVertebrae' = false:
 if showSubjectVertebrae

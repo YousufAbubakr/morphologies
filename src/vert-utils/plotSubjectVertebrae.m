@@ -1,7 +1,9 @@
 function plotSubjectVertebrae(subject)
 % Plotting all vertebra meshes for a single subject
 
-    figure; hold on; axis equal;
+    figure; 
+    ax = axes; ax.SortMethod = 'childorder';
+    hold on; axis equal;
     title("Subject " + subject.vertebrae.subjName, "Interpreter","none");
 
     meshes = subject.vertebrae.mesh;
@@ -9,6 +11,8 @@ function plotSubjectVertebrae(subject)
 
     for k = 1:numel(meshes)
         TR = meshes(k).TR;
+        frame = meshes(k).frame;
+        SI = frame.SI;
 
         trisurf(TR.ConnectivityList, ...
                 TR.Points(:,1), ...
@@ -20,7 +24,17 @@ function plotSubjectVertebrae(subject)
 
         c = meshes(k).centroid;
         plot3(c(1), c(2), c(3), 'k.', 'MarkerSize', 15);
-        text(c(1), c(2), c(3), meshes(k).levelName);
+        text(c(1), c(2), c(3), meshes(k).levelName, ...
+                                'FontSize', 14, ...
+                                'FontWeight', 'bold');
+
+        h = quiver3(c(1), c(2), c(3), ...
+                        SI(1), SI(2), SI(3), ...
+                        20, 'r','LineWidth',3);
+        h.MaxHeadSize = 2;
+
+        set(h, 'Clipping', 'off');
+        set(h, 'PickableParts', 'none');
     end
 
     lighting gouraud;

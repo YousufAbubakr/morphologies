@@ -150,6 +150,12 @@ subjectData = struct('numSubjects', numSubjects, ...
                         'numControlSubjects', numControlSubjects, ...
                         'subject', subject);
 
+%% PIPELINE CONFIGURATION
+% Instead of scattering parameters across scripts, we can define them once
+% and 'cfg' can be passed anywhere:
+cfg = makeConfig();
+validateConfig(cfg)
+
 %% VERTEBRAL GEOMETRY MESH PROPERTIES
 % Appending vertebral body geometry mesh features into the 'subjectData'
 % data structure like so:
@@ -162,7 +168,6 @@ subjectData = struct('numSubjects', numSubjects, ...
 %             ┣ ...
 
 % Plotting and loading vertebral body mesh features into 'subjectData':
-showSubjectVertebrae = true; % if 'false', mesh plots will be skipped
 loadVertebrae; % appends mesh metadata into 'subjectData'
 
 %% OVERWRITE PROPERTIES
@@ -191,4 +196,7 @@ overwriteDiscExports = true;
 %           adjacent vertebral bodies.
 %       2.) Surface lofting: connecting the endplate geometries to form a
 %           closed disc volume
+
+% Constructing discs from vertebrae:
+constructDiscs;
 
