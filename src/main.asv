@@ -5,7 +5,7 @@
 % File: main.m
 % Author: Yousuf Abubakr
 % Project: Morphologies
-% Last Updated: 12-14-2025
+% Last Updated: 12-12-2025
 %
 % Description: main pipeline for spinal morphology measurement project
 %
@@ -162,7 +162,7 @@ subjectData = struct('numSubjects', numSubjects, ...
 %             ┣ ...
 
 % Plotting and loading vertebral body mesh features into 'subjectData':
-showSubjectVertebrae = true; % if 'false', mesh plots will be skipped
+showSubjectVertebrae = false; % if 'false', mesh plots will be skipped
 loadVertebrae; % appends mesh metadata into 'subjectData'
 
 %% OVERWRITE PROPERTIES
@@ -186,9 +186,4 @@ overwriteDiscExports = true;
 % pipeline will proceed to automatically constructing the disc geometries
 % between all of the adjacent vertebral body layers. The pipeline will
 % create these disc geometries in a two-step process:
-%       1.) Endplate extraction: characterizing the geometries of the 
-%           superior and inferior surfaces of the discs based on its two 
-%           adjacent vertebral bodies.
-%       2.) Surface lofting: connecting the endplate geometries to form a
-%           closed disc volume
 

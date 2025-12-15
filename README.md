@@ -1,7 +1,7 @@
 # Morphologies
 **Author:** Yousuf Abubakr (yousufabubakr123@berkeley.edu)
 
-**Lab:** Grace D. O’Connell Lab ([https://oconnell.berkeley.edu/](https://oconnell.berkeley.edu/))
+**Lab:** Grace O’Connell Biomechnics Lab ([https://oconnell.berkeley.edu/](https://oconnell.berkeley.edu/))
 
 **Description:** A toolkit for processing, analyzing, and visualizing morphological data from medical imaging datasets (e.g., STL meshes, MATLAB measurement files).
 
