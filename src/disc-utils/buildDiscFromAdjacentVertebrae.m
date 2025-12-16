@@ -19,14 +19,26 @@ function discMesh = buildDiscFromAdjacentVertebrae(supVertMesh, infVertMesh, cfg
     % ------------------------------------------------------------
     % 1. Extract opposing endplates
     % ------------------------------------------------------------
-    supDiscEnd = extractEndplate(supVertMesh, "inf", pct); % extracting 'inferior' side of 'superior' vertebra --> 'superior' disc endplate
-    infDiscEnd = extractEndplate(infVertMesh, "sup", pct); % extracting 'superior' side of 'inferior' vertebra --> 'inferior' disc endplate
+    % extracting 'inferior' side of 'superior' vertebra --> 'superior' disc
+    % endplate:
+    supDiscEnd = extractEndplate(supVertMesh, "inf", pct); 
+
+    % extracting 'superior' side of 'inferior' vertebra --> 'inferior' disc
+    % endplate:
+    infDiscEnd = extractEndplate(infVertMesh, "sup", pct); 
     
     %figure; hold on;
     %scatter3(supVertMesh.TR.Points(:,1), supVertMesh.TR.Points(:,2), supVertMesh.TR.Points(:,3), 'b')
     %scatter3(infVertMesh.TR.Points(:,1), infVertMesh.TR.Points(:,2), infVertMesh.TR.Points(:,3), 'r')
-    %scatter3(supDiscEnd.Points(:,1), supDiscEnd.Points(:,2), supDiscEnd.Points(:,3), 'k')
-    %scatter3(infDiscEnd.Points(:,1), infDiscEnd.Points(:,2), infDiscEnd.Points(:,3), 'b')
+    %trisurf(supDiscEnd.TR, ...
+    %            'FaceColor', [0.8 0.8 0.8], ...
+    %            'EdgeColor', 'none');
+    %trisurf(infDiscEnd.TR, ...
+    %            'FaceColor', [0.8 0.8 0.8], ...
+    %            'EdgeColor', 'none');
+    %lighting gouraud
+    %camlight headlight
+    %material dull
 
     % Safety check
     if isempty(supDiscEnd.Points) || isempty(infDiscEnd.Points)

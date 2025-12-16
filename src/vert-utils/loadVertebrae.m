@@ -5,7 +5,7 @@
 % File: loadVertebrae.m
 % Author: Yousuf Abubakr
 % Project: Morphologies
-% Last Updated: 12-14-2025
+% Last Updated: 12-16-2025
 %
 % Description: loading and characterizing stl properties from the vertebral
 % body mesh geometries 
@@ -37,11 +37,29 @@ for i = 1:n
     % Extracting mesh properties of ith subject's vertebrae:
     meshes = loadSTLCollection(levelPaths, levelNames, subjectName);
 
-    % Building centerline-based SI axes:
-    meshes = computeSpineAxes(meshes);
-
     % Appending metadata into 'subjectData'
     subjectData.subject(i).vertebrae.mesh = meshes;
+end
+
+%% SUBJECT SPINE METADATA PROCESSING
+% Loading subjects' centerline data into 'subjectData'
+
+n = length(subjectData.subject); % number of subjects
+
+% Looping through each subject's '.vertebrae.mesh' field and appending
+% centerline spline properties:
+for i = 1:n
+    % Computing a smooth spinal centerline from vertebral centroids:
+    subjectData.subject(i).centerline = ...
+            computeSpineCenterline(subjectData.subject(i).vertebrae);
+end
+
+% Secondary loop to compute centerline tangent properties at each vertebral
+% centroid:
+for i = 1:n
+    % Computing unit tangent at subject i's vertebral centroids:
+    subjectData.subject(i) = ...
+            computeCenterlineTangents(subjectData.subject(i));
 end
 
 %% VISUALIZATION
