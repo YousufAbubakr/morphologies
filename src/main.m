@@ -119,7 +119,7 @@ measuredLevels = "all";
 %           2.) Measure specific subjects: ["643", "666", "717", ...]
 % Default settings will be:
 %       --> Subjects: "all"
-measuredSubjects = "765";
+measuredSubjects = "all";
 
 % Notes about pipeline data structure:
 %    --> 'subjectData' is the parent struct and 'subject' is the child

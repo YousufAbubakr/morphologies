@@ -1,5 +1,5 @@
-function plotSubjectVertebrae(subject)
-% Plotting all vertebra meshes for a single subject
+function plotSubject(subject)
+% Visualizing subject geometric properties
 
     figure;
     sgtitle("Subject " + subject.vertebrae.subjName + " Visualization");

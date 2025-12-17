@@ -11,7 +11,7 @@ function cfg = makeConfig()
     % -------------------------------
     % Plotting (if 'false', plots will be skipped)
     % -------------------------------
-    cfg.plot.showGeometryMetadata = true;
+    cfg.plot.showGeometryMetadata = false;
     cfg.plot.showDiscEndplatePoints = true;
 
 end

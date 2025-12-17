@@ -19,7 +19,7 @@ clc; % clearing command window
 varsbefore = who;
 
 %% VERTEBRA STL METADATA PROCESSING
-% Loading mesh data into 'subjectData'
+% Loading subjects' *vertebral mesh* data into 'subjectData'
 
 n = length(subjectData.subject); % number of subjects
 
@@ -43,7 +43,7 @@ for i = 1:n
 end
 
 %% SUBJECT SPINE METADATA PROCESSING
-% Loading subjects' centerline data into 'subjectData'
+% Loading subjects' *centerline* data into 'subjectData'
 
 n = length(subjectData.subject); % number of subjects
 
@@ -60,13 +60,22 @@ end
 for i = 1:n
     % Computing unit tangent at subject i's vertebral centroids:
     subjectData.subject(i).centerline = ...
-            computeCenterlineTangents(subjectData.subject(i).centerline);
+            computeCenterlineTangents(subjectData.subject(i));
 end
 
 %% DISC SPINE METADATA PROCESSING
-% Loading subjects' disc data into 'subjectData'
+% Loading subjects' *disc* data into 'subjectData'
 
+n = length(subjectData.subject); % number of subjects
 
+% Looping through each subject and appending disc centerline spline 
+% properties into 'subject(i).centerline':
+for i = 1:n
+    % Building disc centerline properties from subject i's 'vertebrae' and 
+    % 'centerline' fields:
+    subjectData.subject(i).centerline = ...
+                computeDiscCenterline(subjectData.subject(i));
+end
 
 %% VISUALIZATION
 % Plotting each subjects' vertebral bodies
@@ -77,8 +86,8 @@ showGeometryMetadata = cfg.plot.showGeometryMetadata; % getting config settings
 if showGeometryMetadata
     % Looping through each subject:
     for j = 1:n
-        % Plotting all vertebra meshes for a single subject:
-        plotSubjectVertebrae(subjectData.subject(j));
+        % Visualizing subject geometric properties for a single subject:
+        plotSubject(subjectData.subject(j));
     end
 end
 

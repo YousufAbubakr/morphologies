@@ -1,13 +1,16 @@
-function centerline = computeCenterlineTangents(centerline)
+function centerline = computeCenterlineTangents(subject)
 % Computes unit tangent vectors of the spine centerline
 % at vertebral centroid locations
 %
 % INPUT:
-%   centerline.ppX, ppY, ppZ   spline structs
-%   centerline.tVert           vertebral parameters
+%   subject.centerline.ppX, ppY, ppZ   spline structs
+%   subject.centerline.tVert           vertebral parameters
 %
 % OUTPUT (added to centerline):
 %   centerline.TVert(i,:)      unit tangent at vertebra i
+
+    centerline = subject.centerline;
+    vertLevelNames = subject.vertebrae.levelNames;
 
     % -------------------------------------------------
     % Compute spline derivatives
@@ -38,5 +41,6 @@ function centerline = computeCenterlineTangents(centerline)
     % Imposing (-) to impose upwards direction in the local inf-sup 
     % coordinate frame:
     centerline.vertebrae.T = -T;
+    centerline.vertebrae.levelNames = vertLevelNames;
 end
 
