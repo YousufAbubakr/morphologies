@@ -5,7 +5,7 @@
 % File: main.m
 % Author: Yousuf Abubakr
 % Project: Morphologies
-% Last Updated: 12-19-2025
+% Last Updated: 12-20-2025
 %
 % Description: main pipeline for spinal morphology measurement project
 %
@@ -178,7 +178,8 @@ loadGeometryMetadata; % appends geometry and centerline metadata into 'subjectDa
 %           interior surfaces together.
 
 % Constructing and exporting disc geometries via an endplate extraction → 
-% surface lofting → stitching pipeline:
+% surface lofting → stitching pipeline. Check 'cfg.disc.alreadyMade' and 
+% 'cfg.overwrite.discExports' settings to see routine configuration setup:
 constructDiscs; % appends disc metadata into 'subjectData'
 
 %% ALIGNMENT

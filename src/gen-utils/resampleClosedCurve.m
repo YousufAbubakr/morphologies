@@ -1,14 +1,26 @@
-function Pk = resampleClosedCurve(P, K)
+function Pout = resampleClosedCurve(P, K)
+% P : Nx3 ordered closed boundary (NOT duplicated at end)
+% K : number of points to resample
 
-    P = [P; P(1,:)];     % close loop
-    d = vecnorm(diff(P),2,2);
+    % 1. Remove duplicates
+    P = removeDuplicatePoints(P);
+
+    % 2. Close curve once (safe now)
+    Pext = [P; P(1,:)];
+
+    % 3. Arc-length
+    d = sqrt(sum(diff(Pext,1,1).^2,2));
     s = [0; cumsum(d)];
-    s = s / s(end);
-    
-    sq = linspace(0,1,K+1)';
-    sq(end) = [];
-    
-    Pk = interp1(s, P, sq, 'linear');
 
+    % 4. Enforce uniqueness (belt + suspenders)
+    [s, ia] = unique(s, 'stable');
+    Pext = Pext(ia,:);
+
+    % 5. Uniform parameter
+    sU = linspace(0, s(end), K+1)';
+    sU(end) = [];   % remove duplicate closure
+
+    % 6. Interpolate
+    Pout = interp1(s, Pext, sU, 'linear');
 end
 

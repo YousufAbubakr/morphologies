@@ -4,6 +4,8 @@ function cfg = makeConfig()
     % -------------------------------
     % Disc construction parameters
     % -------------------------------
+    cfg.disc.alreadyMade = true; % if 'true', then disc construction will be skipped
+
     % geometric tolerances used to isolate the endplate surface near the 
     % extremum of the signed-distance field:
     cfg.disc.alpha        = 0.15;    % percentage of vertebral height
@@ -18,7 +20,7 @@ function cfg = makeConfig()
     % Plotting (if 'false', plots will be skipped)
     % -------------------------------------------------
     cfg.plot.showGeometryMetadata = false;
-    cfg.plot.monitorDiscEndplates = true;
+    cfg.plot.monitorDiscEndplates = false;
     cfg.plot.showDiscMetadata = false;
 
     % -------------------------------
@@ -36,6 +38,6 @@ function cfg = makeConfig()
     % into stl files onto 'discPath'. If 'exports' = false, then disc 
     % levels that have already been exported will be skipped.
     cfg.overwrite.measures = true;
-    cfg.overwrite.exports = true;
+    cfg.overwrite.discExports = false;
 end
 

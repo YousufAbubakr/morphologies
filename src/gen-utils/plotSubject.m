@@ -7,7 +7,7 @@ function plotSubject(subject)
     ax1 = subplot(3,7,[1 17]); ax1.SortMethod = 'childorder';
     hold on; axis equal;
     title("Vertebral body meshes","Interpreter","none");
-    xlabel('X'); ylabel('Y'); zlabel('Z')
+    xlabel('X'); ylabel('Y'); zlabel('Z');
 
     lighting gouraud;
     camlight headlight;

@@ -13,9 +13,6 @@ function plotDiscs(subject)
     camlight headlight;
     view(3);
 
-    CDisc = subject.centerline.discs.C;
-    TDisc = subject.centerline.discs.T;
-
     meshes = subject.discs.mesh;
     cmap = lines(numel(meshes));
 
@@ -25,13 +22,7 @@ function plotDiscs(subject)
         % -------------------------------------------------
         % Plot discal meshes
         % -------------------------------------------------
-        trisurf(TR.ConnectivityList, ...
-                TR.Points(:,1), ...
-                TR.Points(:,2), ...
-                TR.Points(:,3), ...
-                'FaceColor', cmap(k,:), ...
-                'EdgeColor','none', ...
-                'FaceAlpha',0.9);
+        trisurf(TR, 'FaceColor', cmap(k,:), 'EdgeColor','none', 'FaceAlpha',0.9);
     end
     % -------------------------------------------------
     % Plot centroids
@@ -43,41 +34,24 @@ function plotDiscs(subject)
                             'FontSize', 14, ...
                             'FontWeight', 'bold');
 
-    subplot(3,7,[4 20])
-    hold on; axis equal; view(3);
-    title("Discal centerline and tangents","Interpreter","none");
-    xlabel('X'); ylabel('Y'); zlabel('Z')
-
-    % ----------------------------------------------------------
-    % Plot vertebra centerline + tangents (stored collectively in C and T)
-    % ----------------------------------------------------------
-    scale = 0.3;
-    quiver3( ...
-        CDisc(:,1), CDisc(:,2), CDisc(:,3), ...
-        TDisc(:,1), TDisc(:,2), TDisc(:,3), ...
-            scale,'Color',[0.5 0 0], ...
-            'LineWidth',2, ...
-            'MaxHeadSize',0.5);
+    ax = subplot(3,7,[4 20]);
+    hold on; axis equal;
+    title("Mid-sagittal cross sections","Interpreter","none");
+    xlabel('Y'); ylabel('Z');
 
     % -------------------------------------------------
-    % Plot centroids
-    % -------------------------------------------------  
-    plot3(cVert(:,1), cVert(:,2), cVert(:,3), 'k.', 'MarkerSize', 15);
-    text(cVert(:,1), cVert(:,2), cVert(:,3), nVert, ...
-                            'FontSize', 14, ...
-                            'FontWeight', 'bold');
+    % Plot mid-sagittal contours
+    % -------------------------------------------------
+    plotSubjectMidSagittalContours(subject, ax);
 
     % -------------------------------------------------
-    % Evaluate and plot centerline
+    % Evaluate centerline
     % -------------------------------------------------
     N = 200;
     tFine = linspace(0,1,N);
     x = ppval(subject.centerline.ppX, tFine);
     y = ppval(subject.centerline.ppY, tFine);
     z = ppval(subject.centerline.ppZ, tFine);
-
-    plot3(x, y, z, 'r-', 'LineWidth',3)
-    legend({'tangents','centroids', 'centerline'},'Location','best')
 
     % -------------------------------------------------
     % Plot 2D centerline projections

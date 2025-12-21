@@ -43,7 +43,12 @@ function [supDiscEnd, infDiscEnd] = getEndplatesFromAdjacentVertebrae( ...
     Pi = resampleClosedCurve(Pi, K);
 
     % ------------------------------------------------------------
-    % 5. Reassigning endplate boundary curves
+    % 5. Aligning disc bonudaries
+    % ------------------------------------------------------------
+    [Pi, Ps] = alignDiscBoundaries(Pi, Ps);
+
+    % ------------------------------------------------------------
+    % 6. Reassigning endplate boundary curves
     % ------------------------------------------------------------
     supDiscEnd.Pb = Ps; % (ordered and resampled)
     infDiscEnd.Pb = Pi; % (ordered and resampled)

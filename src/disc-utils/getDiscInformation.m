@@ -44,13 +44,14 @@ function discData = getDiscInformation(discPath, vertebraData, allLevelNames)
         % Construct per-subject struct
         % -------------------------------------------------------
         discData(i).discs.subjName = subjName;
-        discData(i).discs.numLevels = numel(discNames);
 
         discData(i).discs.levelNames = discNames';
         discData(i).discs.levelPaths = discLevelsPath';
 
         discData(i).discs.supVertNames = supVertNames';
         discData(i).discs.infVertNames = infVertNames';
+
+        discData(i).discs.numLevels = numel(discNames);
     end
 end
 
