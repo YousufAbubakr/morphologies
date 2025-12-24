@@ -8,11 +8,11 @@ function cfg = makeConfig()
     cfg.subjects.measuredSubjects = "all";
 
     % -------------------------------
-    % Disc construction parameters
+    % Disc construction
     % -------------------------------
     cfg.disc.alreadyMade = true; % if 'true', then disc construction will be skipped altogether
 
-    % geometric tolerances used to isolate the endplate surface near the 
+    % Geometric tolerances used to isolate the endplate surface near the 
     % extremum of the signed-distance field:
     cfg.disc.alpha        = 0.15;    % percentage of vertebral height
     cfg.disc.minThickness = 0.5;     % units = mm
@@ -31,6 +31,12 @@ function cfg = makeConfig()
     cfg.plot.showDiscMetadata = false;
 
     cfg.plot.showGeometryAlignments = false;
+
+    % -------------------------------
+    % Measurements
+    % -------------------------------
+    % Measurement frequencies:
+    cfg.measurements.numSlices = 100;
 
     % -------------------------------
     % Overwriting

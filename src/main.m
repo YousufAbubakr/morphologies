@@ -137,4 +137,18 @@ constructDiscs; % appends disc metadata into 'subjectData'
 alignGeometries; % appends alignment metadata into 'subjectData'
 
 %% MEASUREMENTS
+% Accessing morphologies and making measurements of all geometric bodies
+
+% Now that all of the necessary and subject-specific processing has taken
+% place, the routine will now populate the 'subjectData' struct with the
+% geometric measurements associated with each body. The type of
+% measurements include cross sectional area (in the XY, YZ, XZ planes),
+% height (2D distribution between the inferior-superior endplates), volume,
+% etc, all of which will initially be stored in 'subjectData' in each of
+% the respective '.subject.{vertebrae,discs}' fields under the field of
+% '.measurements'.
+%
+% We first populated the '.measurements' field with the measurements
+% associated with the cross sectional (CS) slicer routine:
+makeSlicerMeasurements; % populates 'subjectData' with CS-based measurements
 
