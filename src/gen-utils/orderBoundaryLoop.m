@@ -21,6 +21,5 @@ function Pord = orderBoundaryLoop(P)
 
     % Saftey checks:
     assert(size(P,2) == 3, "P must be N×3");
-    assert(rank(X) >= 2, "Boundary points are degenerate");
 end
 

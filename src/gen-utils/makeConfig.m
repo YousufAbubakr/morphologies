@@ -4,7 +4,7 @@ function cfg = makeConfig()
     % -------------------------------
     % Subject information
     % -------------------------------
-    cfg.subjects.measuredLevels = "all";
+    cfg.subjects.measuredLevels = "all"; % # of levels > 2!
     cfg.subjects.measuredSubjects = "all";
 
     % -------------------------------
@@ -38,7 +38,7 @@ function cfg = makeConfig()
     % Measurements
     % -------------------------------
     % Measurement frequencies:
-    cfg.measurements.numSlices = 100;
+    cfg.measurements.numSlices = 50;
 
     % -------------------------------
     % Overwriting
