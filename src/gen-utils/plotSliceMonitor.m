@@ -3,184 +3,68 @@ function fig = plotSliceMonitor(object, slices, k, cfg, measurements, fig)
 % disc '.mesh' field.
 
     % Getting object properties:
-    subjName = object.subjName;
+    subjName  = object.subjName;
     levelName = object.levelName;
-    TR = object.alignedProperties.TR; % getting aligned TR field
+    TR        = object.alignedProperties.TR; % getting aligned TR field
 
     % Getting slices properties:
-    sliceX = slices.X; sliceY = slices.Y; sliceZ = slices.Z;
     slicerTitle = "(" + string(k) + "/" + string(cfg.measurements.numSlices) + ")";
-
-    % Getting measurement features:
-    csaX = measurements.csa.X; csaY = measurements.csa.Y; csaZ = measurements.csa.Z;
 
     set(0, 'CurrentFigure', fig); clf;
     sgtitle("Subject " + subjName + " Visualization");
 
     % -------------------------------------------------
-    % Plot object (aligned) mesh in sup-inf plane
+    % Slice configuration table
     % -------------------------------------------------
-    ax1 = subplot(4,9,[1 21]); ax1.SortMethod = 'childorder';
-    hold on; view(3);
-    title("Sup-inf (Z) slicing dimension for level " + levelName ,"Interpreter","none");
-    xlabel('X'); ylabel('Y'); zlabel('Z')
+    sliceCfg = struct( ...
+        'name',  {'Z','Y','X'}, ...
+        'label', {'Sup-inf (Z)','Ant-post (Y)','Left-right (X)'}, ...
+        'slice', {slices.Z, slices.Y, slices.X}, ...
+        'csa',   {measurements.csa.Z, measurements.csa.Y, measurements.csa.X}, ...
+        'ax3D',  {[1 21],[4 24],[7 27]}, ...
+        'ax2D',  {28,31,34}, ...
+        'axCSA', {[29 30],[32 33],[35 36]} ...
+    );
 
-    trisurf(TR,'FaceColor',[0.7 0.7 0.7],'EdgeColor','none','FaceAlpha',0.3);
+    % -------------------------------------------------
+    % Loop over slice directions
+    % -------------------------------------------------
+    for i = 1:numel(sliceCfg)
 
-    % Drawing the intersection line:
-    intersectLines = sliceZ.curves3D;
-    nLines = numel(intersectLines);
-    for p = 1:nLines
-        overlap = sliceZ.overlap(p);
+        cfg_i = sliceCfg(i);
 
-        plot3(intersectLines{p}(:,1), ...
-                intersectLines{p}(:,2), ...
-                intersectLines{p}(:,3));
+        % -------- 3D mesh + slice --------
+        ax = subplot(4,9,cfg_i.ax3D);
+        ax.SortMethod = 'childorder';
+        hold on; view(3);
 
-        F = 1:size(intersectLines{p},1); % one face, using all vertices
-        if overlap
-            patch('Vertices', intersectLines{p}, ...
-              'Faces', F, ...
-              'FaceColor', [1 1 1], ...
-              'FaceAlpha', 0.4, ...
-              'EdgeColor', 'k');
-        else
-            patch('Vertices', intersectLines{p}, ...
-              'Faces', F, ...
-              'FaceColor', [0.7 0.7 0.7], ...
-              'FaceAlpha', 0.4, ...
-              'EdgeColor', 'k');
-        end
+        title(cfg_i.label + " slicing for level " + levelName, ...
+              "Interpreter","none");
+        xlabel('X'); ylabel('Y'); zlabel('Z');
+
+        trisurf(TR, ...
+            'FaceColor',[0.7 0.7 0.7], ...
+            'EdgeColor','none', ...
+            'FaceAlpha',0.3);
+
+        plotSliceCurves(cfg_i.slice);
+
+        lighting gouraud
+        camlight headlight
+        material dull
+
+        % -------- 2D polyshape --------
+        subplot(4,9,cfg_i.ax2D); hold on;
+        title("2D slice " + slicerTitle);
+        plot(cfg_i.slice.poly, 'FaceColor',[0.7 0.7 0.7]);
+
+        % -------- CSA history --------
+        subplot(4,9,cfg_i.axCSA); hold on;
+        title("Measurements");
+        plot(1:k, cfg_i.csa(1:k), '-k.');
+        xlabel("Slice index");
+        legend('csa','Location','southeast');
     end
-
-    lighting gouraud
-    camlight headlight
-    material dull
-
-    % --- Showing polyshape ---
-    subplot(4,9,28);
-    hold on; title("2D slice " + slicerTitle);
-    
-    polyZ = sliceZ.poly;
-    plot(polyZ, 'FaceColor',[0.7 0.7 0.7])
-
-    % --- Showing measurements ---
-    subplot(4,9,[29 30]);
-    hold on; title("Measurements");
-
-    plot(1:k, csaZ(1:k),'-k.','DisplayName','csa')
-    xlabel("Slice index");
-    legend('Location','southeast');
-
-    % -------------------------------------------------
-    % Plot object (aligned) mesh in ant-post plane
-    % -------------------------------------------------
-    ax1 = subplot(4,9,[4 24]); ax1.SortMethod = 'childorder';
-    hold on; view(3);
-    title("Ant-post (Y) slicing dimension for level " + levelName ,"Interpreter","none");
-    xlabel('X'); ylabel('Y'); zlabel('Z')
-    
-    trisurf(TR,'FaceColor',[0.7 0.7 0.7],'EdgeColor','none','FaceAlpha',0.3);
-
-    % Drawing the intersection line:
-    intersectLines = sliceY.curves3D;
-    nLines = numel(intersectLines);
-    for p = 1:nLines
-        overlap = sliceY.overlap(p);
-
-        plot3(intersectLines{p}(:,1), ...
-                intersectLines{p}(:,2), ...
-                intersectLines{p}(:,3));
-
-        F = 1:size(intersectLines{p},1); % one face, using all vertices
-        if overlap
-            patch('Vertices', intersectLines{p}, ...
-              'Faces', F, ...
-              'FaceColor', [1 1 1], ...
-              'FaceAlpha', 0.4, ...
-              'EdgeColor', 'k');
-        else
-            patch('Vertices', intersectLines{p}, ...
-              'Faces', F, ...
-              'FaceColor', [0.7 0.7 0.7], ...
-              'FaceAlpha', 0.4, ...
-              'EdgeColor', 'k');
-        end
-    end
-
-    lighting gouraud
-    camlight headlight
-    material dull
-
-    % --- Showing polyshape ---
-    subplot(4,9,31);
-    hold on; title("2D slice " + slicerTitle);
-    
-    polyY = sliceY.poly;
-    plot(polyY, 'FaceColor',[0.7 0.7 0.7])
-
-    % --- Showing measurements ---
-    subplot(4,9,[32 33]);
-    hold on; title("Measurements");
-
-    plot(1:k, csaY(1:k),'-k.','DisplayName','csa')
-    xlabel("Slice index");
-    legend('Location','southeast');
-
-    % -------------------------------------------------
-    % Plot object (aligned) mesh in left-right plane
-    % -------------------------------------------------
-    ax1 = subplot(4,9,[7 27]); ax1.SortMethod = 'childorder';
-    hold on; view(3);
-    title("Left-right (X) slicing dimension for level " + levelName ,"Interpreter","none");
-    xlabel('X'); ylabel('Y'); zlabel('Z')
-    
-    trisurf(TR,'FaceColor',[0.7 0.7 0.7],'EdgeColor','none','FaceAlpha',0.3);
-
-    % Drawing the intersection line:
-    intersectLines = sliceX.curves3D;
-    nLines = numel(intersectLines);
-    for p = 1:nLines
-        overlap = sliceX.overlap(p);
-
-        plot3(intersectLines{p}(:,1), ...
-                intersectLines{p}(:,2), ...
-                intersectLines{p}(:,3));
-
-        F = 1:size(intersectLines{p},1); % one face, using all vertices
-        if overlap
-            patch('Vertices', intersectLines{p}, ...
-              'Faces', F, ...
-              'FaceColor', [1 1 1], ...
-              'FaceAlpha', 0.4, ...
-              'EdgeColor', 'k');
-        else
-            patch('Vertices', intersectLines{p}, ...
-              'Faces', F, ...
-              'FaceColor', [0.7 0.7 0.7], ...
-              'FaceAlpha', 0.4, ...
-              'EdgeColor', 'k');
-        end
-    end
-
-    lighting gouraud
-    camlight headlight
-    material dull
-
-    % --- Showing polyshape ---
-    subplot(4,9,34);
-    hold on; title("2D slice " + slicerTitle);
-    
-    polyX = sliceX.poly;
-    plot(polyX, 'FaceColor',[0.7 0.7 0.7])
-
-    % --- Showing measurements ---
-    subplot(4,9,[35 36]);
-    hold on; title("Measurements");
-
-    plot(1:k, csaX(1:k),'-k.','DisplayName','csa')
-    xlabel("Slice index");
-    legend('Location','southeast');
 
     drawnow;
 end

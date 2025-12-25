@@ -32,13 +32,18 @@ function cfg = makeConfig()
 
     cfg.plot.showGeometryAlignments = false;
 
-    cfg.plot.monitorSlices = true;
+    cfg.plot.monitorVertebraSlices = false;
+    cfg.plot.monitorDiscSlices = false;
 
     % -------------------------------
     % Measurements
     % -------------------------------
     % Measurement frequencies:
     cfg.measurements.numSlices = 50;
+
+    % Skipping measurements or not:
+    cfg.measurements.makeVertebraSlices = false;
+    cfg.measurements.makeDiscSlices = true;
 
     % -------------------------------
     % Overwriting

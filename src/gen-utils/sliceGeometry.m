@@ -26,7 +26,18 @@ function slice = sliceGeometry(axis, geometry, plane)
     loops = extractOrderedLoops(V, E);
     nLoops = numel(loops);
 
-    polys = polyshape.empty;
+    % Capping the number of loops:
+    N = 4;  % number of biggest loops you want
+    if nLoops > N
+        sz = cellfun(@numel, loops); % sizes of each cell
+        [~, idx] = sort(sz, 'descend'); % sort by size (descending)
+        
+        % Select N biggest cells
+        loops = loops(idx(1:N));
+        nLoops = numel(loops);
+    end
+
+    polys = polyshape.empty; % initializing polyshape struct array
 
     % --- Loop over connected components ---
     for k = 1:nLoops
