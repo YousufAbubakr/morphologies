@@ -56,7 +56,7 @@ if makeVertebraSlices
     
             jobCount = jobCount + 1;
             pct = 100 * jobCount / totalJobs;
-            fprintf(['Slicer measurements progress: ' ...
+            nbytes = fprintf(['Slicer measurements progress: ' ...
                         'Subject %d/%d | Vertebra %d/%d | %5.1f%% complete\r'], ...
                         i, n, v, subj.vertebrae.numLevels, pct);
     
@@ -94,6 +94,12 @@ if makeVertebraSlices
                 measures.csa.X(k) = slices.X.area;
                 measures.csa.Y(k) = slices.Y.area;
                 measures.csa.Z(k) = slices.Z.area;
+
+                % Erase the previous line using the stored length
+                fprintf(repmat('\b', 1, nbytes));
+                nbytes = fprintf(['Slicer measurements progress: ' ...
+                        'Subject %d/%d | Vertebrae %d/%d | %5.1f%% progress | %5.1f%% complete \r'], ...
+                        i, n, v, subj.vertebrae.numLevels, pct, k/numSlices * 100);
             
                 % --- Live visualization ---
                 monitorVertebraSlices = cfg.plot.monitorVertebraSlices; % getting config settings
@@ -140,7 +146,7 @@ if makeDiscSlices
     
             jobCount = jobCount + 1;
             pct = 100 * jobCount / totalJobs;
-            fprintf(['Slicer measurements progress: ' ...
+            nbytes = fprintf(['Slicer measurements progress: ' ...
                         'Subject %d/%d | Disc %d/%d | %5.1f%% complete\r'], ...
                         i, n, d, subj.discs.numLevels, pct);
     
@@ -172,12 +178,20 @@ if makeDiscSlices
             % Looping through slices for all three anatomical planes:
             for k = 1:numSlices
                 % --- Slice mesh with each plane ---
-                slices = sliceAllAxes(disc, Px(k), Py(k), Pz(k));
+                ignorance = 0.1; % refers to how much of the inferior and superior slices will be ignored
+                ignoreBoundaries = true; % if 'true', the inferior and superior boundary slices will be ignored
+                slices = sliceAllAxes(disc, Px(k), Py(k), Pz(k), k/numSlices, ignoreBoundaries, ignorance);
     
                 % --- Measurement outputs ---
                 measures.csa.X(k) = slices.X.area;
                 measures.csa.Y(k) = slices.Y.area;
                 measures.csa.Z(k) = slices.Z.area;
+
+                % Erase the previous line using the stored length
+                fprintf(repmat('\b', 1, nbytes));
+                nbytes = fprintf(['Slicer measurements progress: ' ...
+                        'Subject %d/%d | Disc %d/%d | %5.1f%% progress | %5.1f%% complete \r'], ...
+                        i, n, d, subj.discs.numLevels, pct, k/numSlices * 100);
             
                 % --- Live visualization ---
                 monitorDiscSlices = cfg.plot.monitorDiscSlices; % getting config settings

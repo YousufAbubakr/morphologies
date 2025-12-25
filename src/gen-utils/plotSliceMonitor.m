@@ -60,7 +60,7 @@ function fig = plotSliceMonitor(object, slices, k, cfg, measurements, fig)
 
         % -------- CSA history --------
         subplot(4,9,cfg_i.axCSA); hold on;
-        title("Measurements");
+        title("Measurements (units: mm)");
         plot(1:k, cfg_i.csa(1:k), '-k.');
         xlabel("Slice index");
         legend('csa','Location','southeast');

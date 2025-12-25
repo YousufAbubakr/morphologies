@@ -1,12 +1,21 @@
-function slice = sliceGeometry(axis, geometry, plane)
+function slice = sliceGeometry(axis, geometry, plane, kr, ignoreBoundaries, ignorance)
 % geometry : triangulation or surface mesh
 % plane    : triangulated slicing plane (patch/triangulation)
+
+    if nargin < 4
+        ignoreBoundaries = false;
+        ignorance = 0;
+    end
 
     % Initialize output
     slice.curves3D = {};
     slice.poly     = polyshape();
     slice.overlap  = false;
     slice.area     = 0;
+
+    if ignoreBoundaries && (kr <= ignorance || kr >= (1-ignorance))
+        return
+    end
 
     % --- Surface intersection ---
     try
@@ -21,6 +30,11 @@ function slice = sliceGeometry(axis, geometry, plane)
 
     V = intSurf.vertices;
     E = intSurf.edges;
+
+    % --- Defensive edge check ---
+    if isempty(E) || size(E,2) ~= 2
+        return
+    end
 
     % --- Build boundary ---
     loops = extractOrderedLoops(V, E);
