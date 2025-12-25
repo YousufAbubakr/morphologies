@@ -38,7 +38,7 @@ function cfg = makeConfig()
     % -------------------------------
     % Measurements
     % -------------------------------
-    % Skipping measurements or not:
+    % Skipping measurements or not (mainly for maitenance):
     cfg.measurements.makeVertebraSlices = true;
     cfg.measurements.makeDiscSlices = true;
 

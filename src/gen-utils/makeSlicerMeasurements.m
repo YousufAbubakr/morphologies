@@ -5,7 +5,7 @@
 % File: makeSlicerMeasurements.m
 % Author: Yousuf Abubakr
 % Project: Morphologies
-% Last Updated: 12-24-2025
+% Last Updated: 12-25-2025
 %
 % Description: slicing through the subjects' goemetries through the three
 % standard coordinate axes and measuring the associated geometric features
@@ -48,8 +48,10 @@ if makeVertebraSlices
         numLevels = subj.vertebrae.numLevels; % # of disc levels
     
         % Preallocate struct array
-        measurements = repmat(struct('csa', struct('X',[],'Y',[],'Z',[])), ...
-                                    numLevels,1);
+        measurements = repmat(struct( ...
+                                'csa', struct('X',[],'Y',[],'Z',[]), ...
+                                'widths', struct('X',[],'Y',[],'Z',[])), ...
+                                numLevels,1);
     
         % Looping through each vertebra of subject i:
         for v = 1:numLevels
@@ -80,20 +82,19 @@ if makeVertebraSlices
             % Defining sets of three anatomical planes:
             [Px, Py, Pz] = makeAllPlanes(sx, sy, sz, bbox);
     
-            % Initializing slicer measurements along {x,y,z} axes:
-            measures.csa.X = zeros(1, numSlices);
-            measures.csa.Y = zeros(1, numSlices);
-            measures.csa.Z = zeros(1, numSlices);
-    
             % Looping through slices for all three anatomical planes:
             for k = 1:numSlices
                 % --- Slice mesh with each plane ---
-                slices = sliceAllAxes(vert, Px(k), Py(k), Pz(k));
+                slices = sliceAllAxes(vert, Px(k), Py(k), Pz(k), k/numSlices);
     
                 % --- Measurement outputs ---
                 measures.csa.X(k) = slices.X.area;
                 measures.csa.Y(k) = slices.Y.area;
                 measures.csa.Z(k) = slices.Z.area;
+
+                measures.widths.X(k,:) = slices.X.widths.w;
+                measures.widths.Y(k,:) = slices.Y.widths.w;
+                measures.widths.Z(k,:) = slices.Z.widths.w;
 
                 % Erase the previous line using the stored length
                 fprintf(repmat('\b', 1, nbytes));
@@ -138,8 +139,10 @@ if makeDiscSlices
         numLevels = subj.discs.numLevels; % # of disc levels
     
         % Preallocate struct array
-        measurements = repmat(struct('csa', struct('X',[],'Y',[],'Z',[])), ...
-                                    numLevels,1);
+        measurements = repmat(struct( ...
+                                'csa', struct('X',[],'Y',[],'Z',[]), ...
+                                'widths', struct('X',[],'Y',[],'Z',[])), ...
+                                numLevels,1);
     
         % Looping through each disc of subject i:
         for d = 1:numLevels
@@ -170,11 +173,6 @@ if makeDiscSlices
             % Defining sets of three anatomical planes:
             [Px, Py, Pz] = makeAllPlanes(sx, sy, sz, bbox);
     
-            % Initializing slicer measurements along {x,y,z} axes:
-            measures.csa.X = zeros(1, numSlices);
-            measures.csa.Y = zeros(1, numSlices);
-            measures.csa.Z = zeros(1, numSlices);
-    
             % Looping through slices for all three anatomical planes:
             for k = 1:numSlices
                 % --- Slice mesh with each plane ---
@@ -186,6 +184,10 @@ if makeDiscSlices
                 measures.csa.X(k) = slices.X.area;
                 measures.csa.Y(k) = slices.Y.area;
                 measures.csa.Z(k) = slices.Z.area;
+
+                measures.widths.X(k,:) = slices.X.widths.w;
+                measures.widths.Y(k,:) = slices.Y.widths.w;
+                measures.widths.Z(k,:) = slices.Z.widths.w;
 
                 % Erase the previous line using the stored length
                 fprintf(repmat('\b', 1, nbytes));
@@ -217,7 +219,7 @@ if makeDiscSlices
         subjectData.subject(i).discs.measurements = measurements;
     end
 end
-fprintf('\nSlicer measurements done in %.2f seconds.\n', toc);
+fprintf('Slicer measurements done in %.2f seconds (%.2f minutes).\n', toc, toc/60);
 
 %% MATLAB CLEANUP
 % Deleting extraneous subroutine variables:

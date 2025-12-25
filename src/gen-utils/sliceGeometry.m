@@ -2,7 +2,7 @@ function slice = sliceGeometry(axis, geometry, plane, kr, ignoreBoundaries, igno
 % geometry : triangulation or surface mesh
 % plane    : triangulated slicing plane (patch/triangulation)
 
-    if nargin < 4
+    if nargin < 5
         ignoreBoundaries = false;
         ignorance = 0;
     end
@@ -12,6 +12,9 @@ function slice = sliceGeometry(axis, geometry, plane, kr, ignoreBoundaries, igno
     slice.poly     = polyshape();
     slice.overlap  = false;
     slice.area     = 0;
+    
+    slice.widths.w = zeros(1,2);
+    slice.widths.endpoints = cell(1,2);
 
     if ignoreBoundaries && (kr <= ignorance || kr >= (1-ignorance))
         return
@@ -99,8 +102,31 @@ function slice = sliceGeometry(axis, geometry, plane, kr, ignoreBoundaries, igno
         end
     end
 
+    % Combining all polyshapes:
+    newPoly = polyshape(); % starting with an empty polyshape
+    
+    % Loop through your original array and add boundaries
+    for i = 1:length(polys)
+        [x, y] = boundary(polys(i)); % Get boundaries of original polyshape
+        newPoly = addboundary(newPoly, x, y); % Add each as a new boundary
+    end
+
+    % --- Calculate widths ---
+    axes2D = [1 0; 0 1];
+    widths = midlineWidths(newPoly, axes2D);
+
+    % AP and lateral widths are generally poorly calculated around the
+    % boundaries of the geometries, so the inferior and superior width
+    % measurements will be set to 0, given by the following tolerance:
+    widthIgnorance = 0.2;
+    if (kr <= widthIgnorance || kr >= (1-widthIgnorance))
+        widths.w = [0, 0];
+    end
+
     % --- Outputs ---
-    slice.poly = polys;
+    slice.poly = newPoly;
     slice.area = sum(area(polys));
+
+    slice.widths = widths;
 end
 
