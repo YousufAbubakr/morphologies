@@ -12,7 +12,7 @@ function slice = sliceGeometry(axis, geometry, plane, kr, ignorance)
     slice.widths.endpoints = cell(1,2);
     
     axes2D = [1 0; 0 1];
-    slice.widths.endpoints = axes2D;
+    slice.widths.axes2D = axes2D;
 
     if kr <= ignorance || kr >= (1-ignorance)
         return

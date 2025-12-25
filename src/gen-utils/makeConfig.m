@@ -7,6 +7,8 @@ function cfg = makeConfig()
     cfg.subjects.measuredLevels = "all"; % # of levels > 2!
     cfg.subjects.measuredSubjects = "all";
 
+
+
     % -------------------------------
     % Disc construction
     % -------------------------------
@@ -22,6 +24,8 @@ function cfg = makeConfig()
     cfg.disc.nRings         = 20; % number of layers through thickness
     cfg.disc.bulgeAmplitude = 2;   % mm
 
+
+
     % -------------------------------------------------
     % Plotting (if 'false', plots will be skipped)
     % -------------------------------------------------
@@ -36,13 +40,15 @@ function cfg = makeConfig()
     cfg.plot.showGeometryAlignments = false;
 
     cfg.plot.monitorVertebraSlices = false; % if 'makeVertebraSlices' = false, this is skipped
-    cfg.plot.monitorDiscSlices = true; % if 'makeDiscSlices' = false, this is skipped
+    cfg.plot.monitorDiscSlices = false; % if 'makeDiscSlices' = false, this is skipped
+
+
 
     % -------------------------------
     % Measurements
     % -------------------------------
-    % Skipping measurements or not (mainly for maitenance):
-    cfg.measurements.makeVertebraSlices = false;
+    % Skipping measurements or not (mainly for maitenance), defaults = 'true':
+    cfg.measurements.makeVertebraSlices = true;
     cfg.measurements.makeDiscSlices = true;
 
     % Slicer measurements are generally poorly calculated around the
@@ -52,6 +58,8 @@ function cfg = makeConfig()
 
     % Measurement frequencies:
     cfg.measurements.numSlices = 50;
+
+
 
     % -------------------------------
     % Overwriting
