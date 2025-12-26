@@ -5,7 +5,7 @@
 % File: main.m
 % Author: Yousuf Abubakr
 % Project: Morphologies
-% Last Updated: 12-25-2025
+% Last Updated: 12-26-2025
 %
 % Description: main pipeline for spinal morphology measurement project
 %
@@ -157,7 +157,4 @@ clearvars -except cfg;
 % Summarizing all subject data into easy-to-use data structures, and 
 % visualizing the summarized raw data:
 summarizeData; % builds measurement table 'T' and visualizes raw data
-
-% Clearing leftover workspace variables, except measurement table 'T':
-clearvars -except T;
 
