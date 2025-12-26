@@ -1,5 +1,11 @@
-function cfg = makeConfig()
+function cfg = makeConfig(projectPath)
 % Creating a config builder function
+
+    % -------------------------------
+    % Path information
+    % -------------------------------
+    cfg.paths.data = fullfile(projectPath, 'data');
+
 
     % -------------------------------
     % Subject information
@@ -75,7 +81,7 @@ function cfg = makeConfig()
     % and superior vertebrae. These discs geometry will be created and exported
     % into stl files onto 'discPath'. If 'exports' = false, then disc 
     % levels that have already been exported will be skipped.
-    cfg.overwrite.measures = true;
+    cfg.overwrite.measures = false;
     cfg.overwrite.discExports = false; % if '.alreadyMade' = true, then '.discExports' will be skipped
 end
 

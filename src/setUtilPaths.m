@@ -7,7 +7,7 @@
 % Project: Morphologies
 % Last Updated: 12-25-2025
 %
-% Description: adding utility directory files into the MATLAB workspace 
+% Description: adding supplementary directory files into the MATLAB workspace 
 % according to setup described in the README.md file at the head of the
 % repo.
 %
@@ -21,7 +21,7 @@ varsbefore = who;
 %% IDENTIFYING UTILITY FILES
 % Adding utility directory files into the MATLAB workspace 
 
-% Getting directories of utility functions:
+% Getting directories of supplementary functions:
 alignUtilsDir      = 'align-utils';
 dataUtilsDir       = 'data-struct-utils';        
 discConstrUtilsDir = 'disc-constr-utils'; 
@@ -29,6 +29,7 @@ geomMetaUtilsDir   = 'geom-meta-utils';
 plotUtilsDir       = 'plot-utils';               
 slicerUtilsDir     = 'slicer-utils';          
 genUtilsDir        = 'gen-utils';  
+fileDir            = 'file-utils'; 
 
 % Getting paths of utility functions:
 alignUtilsPath = fullfile(srcPath, alignUtilsDir); 
@@ -38,10 +39,12 @@ geomMetaUtilsPath = fullfile(srcPath, geomMetaUtilsDir);
 plotUtilsPath = fullfile(srcPath, plotUtilsDir);
 slicerUtilsPath = fullfile(srcPath, slicerUtilsDir);
 genUtilPath = fullfile(srcPath, genUtilsDir);
+filePath = fullfile(srcPath, fileDir);
 
 % Adding paths of utility functions:
 addpath(alignUtilsPath, dataUtilsPath, discConstrUtilsPath, ...
-            geomMetaUtilsPath, plotUtilsPath, slicerUtilsPath, genUtilPath);
+            geomMetaUtilsPath, plotUtilsPath, slicerUtilsPath, ...
+            genUtilPath, filePath);
 
 %% MATLAB CLEANUP
 % Deleting extraneous subroutine variables:

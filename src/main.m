@@ -31,12 +31,12 @@ cd(srcPath); % setting MATLAB repo to the 'main.m' repo
 
 % Now that the head MATLAB execution file has been identified, the
 % supplementary utility files will be identified here:
-setUtilPaths; % adding utility directory files into MATLAB workspace
+setUtilPaths; % adding supplementary directory files into MATLAB workspace
 
 %% PIPELINE CONFIGURATION
 % Instead of scattering parameters across scripts, we can define them once
 % and 'cfg' can be passed anywhere:
-cfg = makeConfig();
+cfg = makeConfig(projectPath);
 validateConfig(cfg)
 
 %% SUBJECT INFORMATION
@@ -142,15 +142,10 @@ alignGeometries; % appends alignment metadata into 'subjectData'
 % associated with the cross sectional (CS) slicer routine:
 makeSlicerMeasurements; % populates 'subjectData' with slicer-based measurements
 
-% Now we populate the '.measurements' field with height measurement
-% routine:
+% Populating the '.measurements' field with height measurements:
 %makeHeightMeasurements; % populates 'subjectData' with height-based measurements
 
 %% ANALYSIS
 % Displaying raw measurement data and comparing kyphotic and normative
 % experimental groups
-
-%% EXPORTING
-% Writing 'subjectData' to file to save on future measurement processes and
-% further analysis
 

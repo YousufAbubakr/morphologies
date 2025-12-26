@@ -1,4 +1,4 @@
-function measurements = sliceGeometrySet(meshArray, cfg, monitorFlag, jobInfo)
+function [measurements, jobInfo] = sliceGeometrySet(meshArray, cfg, monitorFlag, jobInfo)
 % meshArray : subj.vertebrae.mesh OR subj.discs.mesh
 
     numLevels = numel(meshArray);
