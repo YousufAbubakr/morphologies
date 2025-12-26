@@ -148,9 +148,16 @@ makeSlicerMeasurements; % populates 'subjectData' with slicer-based measurements
 
 % Clearing leftover workspace variables, using only the 'data/measurements'
 % files for the analysis section:
-clear;
+clearvars -except cfg;
 
 %% ANALYSIS
 % Displaying raw measurement data in 'data/measurements' and comparing 
 % kyphotic and normative experimental groups
+
+% Summarizing all subject data into easy-to-use data structures, and 
+% visualizing the summarized raw data:
+summarizeData; % builds measurement table 'T' and visualizes raw data
+
+% Clearing leftover workspace variables, except measurement table 'T':
+clearvars -except T;
 
