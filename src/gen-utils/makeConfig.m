@@ -14,7 +14,6 @@ function cfg = makeConfig(projectPath)
     cfg.subjects.measuredSubjects = "all";
 
 
-
     % -------------------------------
     % Disc construction
     % -------------------------------
@@ -29,7 +28,6 @@ function cfg = makeConfig(projectPath)
     % lofting parameters:
     cfg.disc.nRings         = 20; % number of layers through thickness
     cfg.disc.bulgeAmplitude = 2;   % mm
-
 
 
     % -------------------------------------------------
@@ -49,7 +47,6 @@ function cfg = makeConfig(projectPath)
     cfg.plot.monitorDiscSlices = false; % if 'makeDiscSlices' = false, this is skipped
 
 
-
     % -------------------------------
     % Measurements
     % -------------------------------
@@ -64,7 +61,6 @@ function cfg = makeConfig(projectPath)
 
     % Measurement frequencies:
     cfg.measurements.numSlices = 50;
-
 
 
     % -------------------------------

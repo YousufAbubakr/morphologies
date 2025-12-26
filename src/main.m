@@ -139,13 +139,18 @@ alignGeometries; % appends alignment metadata into 'subjectData'
 % '.measurements'.
 %
 % We first populate the '.measurements' field with the measurements
-% associated with the cross sectional (CS) slicer routine:
+% associated with the cross sectional (CS) slicer routine and write the 
+% results to 'data/measurements' directory:
 makeSlicerMeasurements; % populates 'subjectData' with slicer-based measurements
 
 % Populating the '.measurements' field with height measurements:
 %makeHeightMeasurements; % populates 'subjectData' with height-based measurements
 
+% Clearing leftover workspace variables, using only the 'data/measurements'
+% files for the analysis section:
+clear;
+
 %% ANALYSIS
-% Displaying raw measurement data and comparing kyphotic and normative
-% experimental groups
+% Displaying raw measurement data in 'data/measurements' and comparing 
+% kyphotic and normative experimental groups
 

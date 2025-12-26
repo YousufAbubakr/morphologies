@@ -63,7 +63,7 @@ for i = 1:subjectData.numSubjects
             cfg.plot.monitorDiscSlices, job);
     end
 
-    % Write to disk:
+    % Write to 'data/measurements' directory:
     writeSubjectData(subjectData.subject(i), cfg);
 end
 fprintf('Slicer measurements done in %.2f seconds (%.2f minutes)!\n', toc, toc/60);

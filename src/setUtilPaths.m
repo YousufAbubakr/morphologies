@@ -29,22 +29,24 @@ geomMetaUtilsDir   = 'geom-meta-utils';
 plotUtilsDir       = 'plot-utils';               
 slicerUtilsDir     = 'slicer-utils';          
 genUtilsDir        = 'gen-utils';  
-fileDir            = 'file-utils'; 
+fileDir            = 'file-utils';
+analysisDir        = 'analysis-utils';
 
 % Getting paths of utility functions:
-alignUtilsPath = fullfile(srcPath, alignUtilsDir); 
-dataUtilsPath = fullfile(srcPath, dataUtilsDir);
+alignUtilsPath      = fullfile(srcPath, alignUtilsDir); 
+dataUtilsPath       = fullfile(srcPath, dataUtilsDir);
 discConstrUtilsPath = fullfile(srcPath, discConstrUtilsDir); 
-geomMetaUtilsPath = fullfile(srcPath, geomMetaUtilsDir);
-plotUtilsPath = fullfile(srcPath, plotUtilsDir);
-slicerUtilsPath = fullfile(srcPath, slicerUtilsDir);
-genUtilPath = fullfile(srcPath, genUtilsDir);
-filePath = fullfile(srcPath, fileDir);
+geomMetaUtilsPath   = fullfile(srcPath, geomMetaUtilsDir);
+plotUtilsPath       = fullfile(srcPath, plotUtilsDir);
+slicerUtilsPath     = fullfile(srcPath, slicerUtilsDir);
+genUtilPath         = fullfile(srcPath, genUtilsDir);
+filePath            = fullfile(srcPath, fileDir);
+analysisPath        = fullfile(srcPath, analysisDir);
 
 % Adding paths of utility functions:
 addpath(alignUtilsPath, dataUtilsPath, discConstrUtilsPath, ...
             geomMetaUtilsPath, plotUtilsPath, slicerUtilsPath, ...
-            genUtilPath, filePath);
+            genUtilPath, filePath, analysisPath);
 
 %% MATLAB CLEANUP
 % Deleting extraneous subroutine variables:

@@ -22,12 +22,17 @@ function measures = sliceOneGeometry(mesh, cfg, ignorance, monitor, jobInfo)
     [Px, Py, Pz] = makeAllPlanes(sx, sy, sz, bbox);
     
     % Preallocate
-    measures.csa.X    = zeros(numSlices,1);
+    measures.csa.X    = zeros(numSlices,1); % areas
     measures.csa.Y    = zeros(numSlices,1);
     measures.csa.Z    = zeros(numSlices,1);
-    measures.widths.X = zeros(numSlices,2);
+
+    measures.widths.X = zeros(numSlices,2); % widths
     measures.widths.Y = zeros(numSlices,2);
     measures.widths.Z = zeros(numSlices,2);
+
+    measures.slice.X  = sx - min(sx); % (normalized) slice positions
+    measures.slice.Y  = sy - min(sy);
+    measures.slice.Z  = sz - min(sz);
     
     % Slice loop
     for k = 1:numSlices
