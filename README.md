@@ -26,13 +26,18 @@ git clone https://github.com/YousufAbubakr/morphologies.git
 ## Repository Setup
 ```
 📦morphoogies                
- ┣ 📂results                 ← output files, figures, exported meshes, etc.
- ┣ 📂src                     ← utility, analysis, and vertebrae/disc codes
- ┃ ┣ 📂analysis
- ┃ ┣ 📂disc-utils            ← utility functions related to disc morphology processing
- ┃ ┣ 📂gen-utils             ← utility functions related to general processing
- ┃ ┣ 📂vert-utils            ← utility functions related to vertebra morphology processing
+ ┣ 📂data                    ← output files, figures, etc.
+ ┃ ┣ 📂measurements          ← directory of subject data .mat files
+ ┃ ┃ ┣ 📜SubjectA.mat
+ ┃ ┃ ┣ 📜SubjectB.mat
+ ┃ ┃ ┣ ...
+ ┣ 📂src                     ← utility, analysis, and pipeline codes
+ ┃ ┣ 📂align-utils
+ ┃ ┣ 📂analysis-utils  
+ ┃ ┣ 📂data-struct-utils   
+ ┃ ┣ ...
  ┃ ┣ 📜main.m                ← end-to-end workflow program for processing vertebral and disc morphology data
+ ┃ ┣ 📜setUtilPaths.m        ← setting supplementary directory files into global MATLAB workspace 
  ┣ 📂stl-geometries          ← source .stl geometry data
  ┃ ┣ 📂disc-stls             ← automated disc construction process in pipeline
  ┃ ┃ ┣ 📂Subject A
