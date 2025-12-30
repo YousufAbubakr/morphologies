@@ -5,7 +5,7 @@
 % File: main.m
 % Author: Yousuf Abubakr
 % Project: Morphologies
-% Last Updated: 12-26-2025
+% Last Updated: 12-30-2025
 %
 % Description: main pipeline for spinal morphology measurement project
 %
@@ -137,14 +137,27 @@ alignGeometries; % appends alignment metadata into 'subjectData'
 % etc, all of which will initially be stored in 'subjectData' in each of
 % the respective '.subject.{vertebrae,discs}' fields under the field of
 % '.measurements'.
-%
-% We first populate the '.measurements' field with the measurements
-% associated with the cross sectional (CS) slicer routine and write the 
-% results to 'data/measurements' directory:
+
+% Checking if the slicer, height, and volume measurements have been made
+% and exported to the 'data/measurements' directory:
+areMeasurementsDone; % returns boolean 'measurementsDone'
+
+% Populating the '.measurements' field with the measurements associated 
+% with the cross sectional (CS) slicer routine:
 makeSlicerMeasurements; % populates 'subjectData' with slicer-based measurements
 
 % Populating the '.measurements' field with height measurements:
-%makeHeightMeasurements; % populates 'subjectData' with height-based measurements
+makeHeightMeasurements; % populates 'subjectData' with height-based measurements
+
+% Populating the '.measurements' field with volume measurements:
+%makeVolumeMeasurements; % populates 'subjectData' with volume-based measurements
+
+%% EXPORTING
+% Writing subject specific data to the 'data/measurements' directory
+
+% 'data/measurements' directory will be populated with 'XXX.mat' files,
+% where 'XXX' refers to the subject name (ID) of each porcine subject:
+exportData; % if measurements are not done or set to be written, files will be written here
 
 % Clearing leftover workspace variables, using only the 'data/measurements'
 % files for the analysis section:

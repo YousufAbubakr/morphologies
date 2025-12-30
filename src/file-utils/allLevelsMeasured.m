@@ -1,79 +1,106 @@
-function tf = allLevelsMeasured(subj, cfg)
+function tf = allLevelsMeasured(subj, savedConfig, cfg)
 
     tf = true;
 
-    % Measurement frequencies:
-    numSlices = cfg.measurements.numSlices;
+    % Measurement frequencies and ignorances of current config settings:
+    currNumSlices = cfg.measurements.numSlices;
+    currHeightResolution = cfg.measurements.heightResolution;
+
+    currSlicerIgnorance = cfg.measurements.slicerIgnorance;
+    currHeightIgnorance = cfg.measurements.heightIgnorance;
+
+    % Measurement frequencies and ignorances of saved config settings:
+    savNumSlices = savedConfig.measurements.numSlices;
+    savHeightResolution = savedConfig.measurements.heightResolution;
+
+    savSlicerIgnorance = savedConfig.measurements.slicerIgnorance;
+    savHeightIgnorance = savedConfig.measurements.heightIgnorance;
     
+    % Checking that the current config settings are the same as the 
+    % savaed measurement settings:
+    if (currNumSlices ~= savNumSlices) || ...
+        (currHeightResolution ~= savHeightResolution) || ...
+        (currSlicerIgnorance ~= savSlicerIgnorance) || ...
+        (currHeightIgnorance ~= savHeightIgnorance)
+        tf = false;
+        return
+    end
+
     % ---- Vertebrae ----
-    if cfg.measurements.makeVertebraSlices
-        meas = subj.vertebrae.measurements;
-    
-        if isempty(meas) || numel(meas) ~= subj.vertebrae.numLevels
+    meas = subj.vertebrae.measurements;
+
+    % Sanity checking measurement struc array:
+    if isempty(meas) || ~isfield(meas, 'slicer') || ~isfield(meas, 'height')
+        tf = false;
+        return
+    end
+    slices = meas.slicer; % slicer measurements (csa, widths, slice)
+    heights = meas.height; % slicer measurements (LAT, AP)
+
+    % Checking if the measurements fields inside of 'meas' exist and have
+    % complete measurements:
+    for i = 1:subj.vertebrae.numLevels
+        allFieldsExist = isfield(slices(i), 'csa') && isfield(slices(i), 'widths') && isfield(slices(i), 'slice');
+        
+        % Slicer measurements are complete if not all {X,Y,Z} entries
+        % in the 'csa', 'widths', and 'slice' data structures are zero, 
+        % checking if there are *any* non-zero entries in the following 
+        % slicer measurements:
+        slicerMeasurementsComplete = ...
+            (any(slices(i).csa.X ~= 0,'all') && any(slices(i).csa.Y ~= 0,'all') && any(slices(i).csa.Z ~= 0,'all')) && ...
+            (any(slices(i).widths.X ~= 0,'all') && any(slices(i).widths.Y ~= 0,'all') && any(slices(i).widths.Z ~= 0,'all')) && ...
+            (any(slices(i).slice.X ~= 0,'all') && any(slices(i).slice.Y ~= 0,'all') && any(slices(i).slice.Z ~= 0,'all'));
+        
+        % Height measurements are complete if not all entries in the 'LAT'
+        % and 'AP' profile and coords data structures are zero, checking if
+        % there are *any* non-zero entries in the following height 
+        % measurements:
+        heightMeasurementsComplete = ...
+            (any(heights(i).LAT.profile ~= 0,'all') && any(heights(i).LAT.coords ~= 0,'all')) && ...
+            (any(heights(i).AP.profile ~= 0,'all') && any(heights(i).AP.coords ~= 0,'all'));
+
+        if ~allFieldsExist || ~slicerMeasurementsComplete || ~heightMeasurementsComplete
             tf = false;
             return
-        end
-    
-        % Checking if the measurements fields inside of 'meas' are either
-        % empty of all non-zero:
-        for i = 1:numel(meas)
-            if ~isfield(meas(i), 'csa') || ...
-               ~isfield(meas(i), 'widths') || ...
-               ~isfield(meas(i), 'slice') || ...
-               (all(meas(i).csa.X == 0) || all(meas(i).csa.Y == 0) || all(meas(i).csa.Z == 0)) || ...
-               (all(all(meas(i).widths.X == 0)) || all(all(meas(i).widths.Y == 0)) || all(all(meas(i).widths.Z == 0))) || ...
-               (all(meas(i).slice.X == 0) || all(meas(i).slice.Y == 0) || all(meas(i).slice.Z == 0))
-                tf = false;
-                return
-            end
-        end
-
-        % Checking that the config settings are the same as the measurement 
-        % settings (width measurements have twice the number of elements 
-        % because there are two width measurements):
-        for i = 1:numel(meas)
-            if (numel(meas(i).csa.X) ~= numSlices || numel(meas(i).csa.Y) ~= numSlices || numel(meas(i).csa.Z) ~= numSlices) || ...
-               (numel(meas(i).widths.X) ~= numSlices*2 || numel(meas(i).widths.Y) ~= numSlices*2 || numel(meas(i).widths.Z) ~= numSlices*2) || ...
-               (numel(meas(i).slice.X) ~= numSlices || numel(meas(i).slice.Y) ~= numSlices || numel(meas(i).slice.Z) ~= numSlices)
-                tf = false;
-                return
-            end
         end
     end
     
     % ---- Discs ----
-    if cfg.measurements.makeDiscSlices
-        meas = subj.discs.measurements;
-    
-        if isempty(meas) || numel(meas) ~= subj.discs.numLevels
+    meas = subj.discs.measurements;
+
+    % Sanity checking measurement struc array:
+    if isempty(meas) || ~isfield(meas, 'slicer') || ~isfield(meas, 'height')
+        tf = false;
+        return
+    end
+    slices = meas.slicer; % slicer measurements (csa, widths, slice)
+    heights = meas.height; % slicer measurements (LAT, AP)
+
+    % Checking if the measurements fields inside of 'meas' exist and have
+    % complete measurements:
+    for i = 1:subj.discs.numLevels
+        allFieldsExist = isfield(slices(i), 'csa') && isfield(slices(i), 'widths') && isfield(slices(i), 'slice');
+        
+        % Slicer measurements are complete if not all {X,Y,Z} entries
+        % in the 'csa', 'widths', and 'slice' data structures are zero, 
+        % checking if there are *any* non-zero entries in the following 
+        % slicer measurements:
+        slicerMeasurementsComplete = ...
+            (any(slices(i).csa.X ~= 0,'all') && any(slices(i).csa.Y ~= 0,'all') && any(slices(i).csa.Z ~= 0,'all')) && ...
+            (any(slices(i).widths.X ~= 0,'all') && any(slices(i).widths.Y ~= 0,'all') && any(slices(i).widths.Z ~= 0,'all')) && ...
+            (any(slices(i).slice.X ~= 0,'all') && any(slices(i).slice.Y ~= 0,'all') && any(slices(i).slice.Z ~= 0,'all'));
+        
+        % Height measurements are complete if not all entries in the 'LAT'
+        % and 'AP' profile and coords data structures are zero, checking if
+        % there are *any* non-zero entries in the following height 
+        % measurements:
+        heightMeasurementsComplete = ...
+            (any(heights(i).LAT.profile ~= 0,'all') && any(heights(i).LAT.coords ~= 0,'all')) && ...
+            (any(heights(i).AP.profile ~= 0,'all') && any(heights(i).AP.coords ~= 0,'all'));
+
+        if ~allFieldsExist || ~slicerMeasurementsComplete || ~heightMeasurementsComplete
             tf = false;
             return
-        end
-    
-        % Checking if the measurements fields inside of 'meas' are either
-        % empty of all non-zero:
-        for i = 1:numel(meas)
-            if ~isfield(meas(i), 'csa') || ...
-               ~isfield(meas(i), 'widths') || ...
-               ~isfield(meas(i), 'slice') || ...
-               (all(meas(i).csa.X == 0) || all(meas(i).csa.Y == 0) || all(meas(i).csa.Z == 0)) || ...
-               (all(all(meas(i).widths.X == 0)) || all(all(meas(i).widths.Y == 0)) || all(all(meas(i).widths.Z == 0))) || ...
-               (all(meas(i).slice.X == 0) || all(meas(i).slice.Y == 0) || all(meas(i).slice.Z == 0))
-                tf = false;
-                return
-            end
-        end
-
-        % Checking that the config settings are the same as the measurement 
-        % settings (width measurements have twice the number of elements 
-        % because there are two width measurements):
-        for i = 1:numel(meas)
-            if (numel(meas(i).csa.X) ~= numSlices || numel(meas(i).csa.Y) ~= numSlices || numel(meas(i).csa.Z) ~= numSlices) || ...
-               (numel(meas(i).widths.X) ~= numSlices*2 || numel(meas(i).widths.Y) ~= numSlices*2 || numel(meas(i).widths.Z) ~= numSlices*2) || ...
-               (numel(meas(i).slice.X) ~= numSlices || numel(meas(i).slice.Y) ~= numSlices || numel(meas(i).slice.Z) ~= numSlices)
-                tf = false;
-                return
-            end
         end
     end
 end

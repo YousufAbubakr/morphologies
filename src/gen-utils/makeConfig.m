@@ -46,6 +46,8 @@ function cfg = makeConfig(projectPath)
     cfg.plot.monitorVertebraSlices = false; % if 'makeVertebraSlices' = false, this is skipped
     cfg.plot.monitorDiscSlices = false; % if 'makeDiscSlices' = false, this is skipped
 
+    cfg.plot.monitorHeightMaps = true;
+
 
     % -------------------------------
     % Measurements
@@ -54,13 +56,18 @@ function cfg = makeConfig(projectPath)
     cfg.measurements.makeVertebraSlices = true;
     cfg.measurements.makeDiscSlices = true;
 
+    cfg.measurements.makeVertebraHeights = true;
+    cfg.measurements.makeDiscHeights = true;
+
     % Slicer measurements are generally poorly calculated around the
     % boundaries of the geometries, so the inferior and superior width
     % measurements will be set to 0, given by the following tolerance:
-    cfg.measurements.slicerIgnorance = 0.15; % 0 <= slicerIgnorance < 0.5
+    cfg.measurements.slicerIgnorance = 0.1; % 0 <= slicerIgnorance < 0.5
+    cfg.measurements.heightIgnorance = 0.2; % 0 <= heightIgnorance < 0.5
 
     % Measurement frequencies:
-    cfg.measurements.numSlices = 100;
+    cfg.measurements.numSlices = 50;
+    cfg.measurements.heightResolution = 100;
 
 
     % -------------------------------

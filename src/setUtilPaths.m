@@ -31,6 +31,7 @@ slicerUtilsDir     = 'slicer-utils';
 genUtilsDir        = 'gen-utils';  
 fileDir            = 'file-utils';
 analysisDir        = 'analysis-utils';
+heightDir          = 'height-utils';
 
 % Getting paths of utility functions:
 alignUtilsPath      = fullfile(srcPath, alignUtilsDir); 
@@ -42,11 +43,12 @@ slicerUtilsPath     = fullfile(srcPath, slicerUtilsDir);
 genUtilPath         = fullfile(srcPath, genUtilsDir);
 filePath            = fullfile(srcPath, fileDir);
 analysisPath        = fullfile(srcPath, analysisDir);
+heightPath        = fullfile(srcPath, heightDir);
 
 % Adding paths of utility functions:
 addpath(alignUtilsPath, dataUtilsPath, discConstrUtilsPath, ...
             geomMetaUtilsPath, plotUtilsPath, slicerUtilsPath, ...
-            genUtilPath, filePath, analysisPath);
+            genUtilPath, filePath, analysisPath, heightPath);
 
 %% MATLAB CLEANUP
 % Deleting extraneous subroutine variables:

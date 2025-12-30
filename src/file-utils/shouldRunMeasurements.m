@@ -7,18 +7,16 @@ function doRun = shouldRunMeasurements(subj, cfg)
         % Load existing subject data
         S = load(fname, 'subject', 'meta');
         savedSubj = S.subject;
+        savedConfig = S.meta.cfg;
     
         % Check completeness
-        isComplete = allLevelsMeasured(savedSubj, cfg);
+        isComplete = allLevelsMeasured(savedSubj, savedConfig, cfg);
 
-        if cfg.overwrite.measures
-            fprintf('Overwriting existing measurements for subject %s!\n', subj.name);
-            doRun = true;
-        elseif ~isComplete
-            fprintf('Resuming incomplete measurements for subject %s!\n', subj.name);
+        if ~isComplete
+            fprintf("Incomplete measurements, all existing measurements will be rewritten!\n");
             doRun = true;
         else
-            fprintf('Skipping subject %s (measurements already exist)!\n', subj.name);
+            fprintf("Subject %s's measurements already exist!\n", subj.name);
             doRun = false;
         end
     else
