@@ -16,7 +16,7 @@ function doRun = shouldRunMeasurements(subj, cfg)
             fprintf("Incomplete measurements, all existing measurements will be rewritten!\n");
             doRun = true;
         else
-            fprintf("Subject %s's measurements already exist!\n", subj.name);
+            fprintf("Subject %s's measurements already written!\n", subj.name);
             doRun = false;
         end
     else

@@ -32,7 +32,7 @@ if cfg.overwrite.measures || ~measurementsDone
         % Write to 'data/measurements' directory:
         writeSubjectData(subjectData.subject(i), cfg);
     end
-    fprintf('Subjects have been written to data\measurements!\n');
+    fprintf("Subjects have been written to 'data/measurements' directory!\n");
 end
 
 %% MATLAB CLEANUP

@@ -5,7 +5,7 @@
 % File: setUtilPaths.m
 % Author: Yousuf Abubakr
 % Project: Morphologies
-% Last Updated: 12-25-2025
+% Last Updated: 12-30-2025
 %
 % Description: adding supplementary directory files into the MATLAB workspace 
 % according to setup described in the README.md file at the head of the
@@ -32,6 +32,7 @@ genUtilsDir        = 'gen-utils';
 fileDir            = 'file-utils';
 analysisDir        = 'analysis-utils';
 heightDir          = 'height-utils';
+volDir             = 'vol-utils';
 
 % Getting paths of utility functions:
 alignUtilsPath      = fullfile(srcPath, alignUtilsDir); 
@@ -43,12 +44,13 @@ slicerUtilsPath     = fullfile(srcPath, slicerUtilsDir);
 genUtilPath         = fullfile(srcPath, genUtilsDir);
 filePath            = fullfile(srcPath, fileDir);
 analysisPath        = fullfile(srcPath, analysisDir);
-heightPath        = fullfile(srcPath, heightDir);
+heightPath          = fullfile(srcPath, heightDir);
+volPath             = fullfile(srcPath, volDir);
 
 % Adding paths of utility functions:
 addpath(alignUtilsPath, dataUtilsPath, discConstrUtilsPath, ...
             geomMetaUtilsPath, plotUtilsPath, slicerUtilsPath, ...
-            genUtilPath, filePath, analysisPath, heightPath);
+            genUtilPath, filePath, analysisPath, heightPath, volPath);
 
 %% MATLAB CLEANUP
 % Deleting extraneous subroutine variables:

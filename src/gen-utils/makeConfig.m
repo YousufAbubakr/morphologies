@@ -38,7 +38,7 @@ function cfg = makeConfig(projectPath)
     % these for maitenance only!
     cfg.plot.showGeometryMetadata = false;
 
-    cfg.plot.monitorDiscEndplates = true; % if '.alreadyMade' = true, then '.monitorDiscEndplates' will be skipped
+    cfg.plot.monitorDiscEndplates = false; % if '.alreadyMade' = true, then '.monitorDiscEndplates' will be skipped
     cfg.plot.showDiscMetadata = false;
 
     cfg.plot.showGeometryAlignments = false;
@@ -46,7 +46,7 @@ function cfg = makeConfig(projectPath)
     cfg.plot.monitorVertebraSlices = false; % if 'makeVertebraSlices' = false, this is skipped
     cfg.plot.monitorDiscSlices = false; % if 'makeDiscSlices' = false, this is skipped
 
-    cfg.plot.monitorHeightMaps = true;
+    cfg.plot.monitorHeightMaps = false;
 
 
     % -------------------------------
@@ -66,8 +66,8 @@ function cfg = makeConfig(projectPath)
     cfg.measurements.heightIgnorance = 0.2; % 0 <= heightIgnorance < 0.5
 
     % Measurement frequencies:
-    cfg.measurements.numSlices = 50;
-    cfg.measurements.heightResolution = 100;
+    cfg.measurements.numSlices = 25;
+    cfg.measurements.heightResolution = 25;
 
 
     % -------------------------------
