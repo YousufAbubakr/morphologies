@@ -31,6 +31,9 @@ allLevelNames = ["T1", "T2", "T3", "T4", "T5", "T6", "T7", ...
                     "T8", "T9", "T10", "T11", "T12", "T13", "T14", ...
                     "T15", "L1", "L2", "L3", "L4", "L5", "L6"];
 
+% Starting rountine clock:
+tic;
+
 % Subject name --> subject state dictionary object:
 subjectDict = dictionary(allSubjectNames, allSubjectStates);
 
@@ -143,6 +146,7 @@ subjectData = struct('numSubjects', numSubjects, ...
                         'numKyphoticSubjects', numKyphoticSubjects, ...
                         'numControlSubjects', numControlSubjects, ...
                         'subject', subject);
+fprintf('Data structure setup done in %.2f seconds (%.2f minutes)!\n', toc, toc/60);
 
 %% MATLAB CLEANUP
 % Deleting extraneous subroutine variables:

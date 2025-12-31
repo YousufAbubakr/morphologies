@@ -12,8 +12,6 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-clc; % clearing command window
-
 % Getting workspace variables at the start of the new script:
 varsbefore = who;
 
@@ -21,6 +19,15 @@ varsbefore = who;
 % Defining the translation vector associated with the rigid body (RB)
 % transformation associated with each geometry's soon-to-be aligned
 % mesh geometry.
+
+% Skipping if measurements are already done:
+if measurementsDone
+    fprintf('Measurements have already done --> geometry alignment!\n');
+    return;
+end
+
+% Starting rountine clock:
+tic;
 
 n = subjectData.numSubjects; % number of subjects
 
@@ -166,6 +173,7 @@ if showGeometryAlignments
     % Visualizing alignment properties for all subjects:
     plotBeforeAfter(subjectData);
 end
+fprintf('Geometry alignment done in %.2f seconds (%.2f minutes)!\n', toc, toc/60);
 
 %% MATLAB CLEANUP
 % Deleting extraneous subroutine variables:

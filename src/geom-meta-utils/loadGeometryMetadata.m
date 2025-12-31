@@ -13,13 +13,20 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-clc; % clearing command window
-
 % Getting workspace variables at the start of the new script:
 varsbefore = who;
 
 %% VERTEBRA STL METADATA PROCESSING
 % Loading subjects' *vertebral mesh* data into 'subjectData'
+
+% Skipping if measurements are already done:
+if measurementsDone
+    fprintf('Measurements have already done --> skipping goemetry metadata processing!\n');
+    return;
+end
+
+% Starting rountine clock:
+tic;
 
 n = subjectData.numSubjects; % number of subjects
 
@@ -86,6 +93,7 @@ if showGeometryMetadata
         plotSubject(subjectData.subject(j));
     end
 end
+fprintf('Loading geometry done in %.2f seconds (%.2f minutes)!\n', toc, toc/60);
 
 %% MATLAB CLEANUP
 % Deleting extraneous subroutine variables:

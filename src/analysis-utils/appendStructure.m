@@ -7,12 +7,14 @@ function rows = appendStructure(rows, measurements, subjectID, isKyphotic, group
     
         for a = 1:3
             ax = axes{a};
+
+            numLevels = numel(meas.slicer);
     
-            csa    = meas.csa.(ax);        % [Nslices × 1]
-            widths = meas.widths.(ax);     % [Nslices × 2]
-            slice  = meas.slice.(ax);      % [1 × Nslices] or [Nslices × 1]
-    
-            for k = 1:numel(csa)
+            for k = 1:numLevels
+                csa    = meas.slicer(k).csa.(ax);        % [Nslices × 1]
+                widths = meas.slicer(k).widths.(ax);     % [Nslices × 2]
+                slice  = meas.slicer(k).slice.(ax);      % [1 × Nslices]
+
                 rows(end+1,:) = { ...
                     subjectID, ...
                     isKyphotic, ...

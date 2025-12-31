@@ -5,7 +5,7 @@
 % File: main.m
 % Author: Yousuf Abubakr
 % Project: Morphologies
-% Last Updated: 12-30-2025
+% Last Updated: 12-31-2025
 %
 % Description: main pipeline for spinal morphology measurement project
 %
@@ -93,6 +93,10 @@ validateConfig(cfg)
 % the following subroutine:
 setSubjectInformation; % constructs and initializes 'subjectData' data structure
 
+% Checking if the slicer, height, and volume measurements have been made
+% and exported to the 'data/measurements' directory:
+areMeasurementsDone; % returns boolean 'measurementsDone'
+
 %% GEOMETRY PROPERTIES
 % Appending vertebral body, disc, and centerline geometry features into 
 % 'subjectData' data structure
@@ -137,10 +141,6 @@ alignGeometries; % appends alignment metadata into 'subjectData'
 % etc, all of which will initially be stored in 'subjectData' in each of
 % the respective '.subject.{vertebrae,discs}' fields under the field of
 % '.measurements'.
-
-% Checking if the slicer, height, and volume measurements have been made
-% and exported to the 'data/measurements' directory:
-areMeasurementsDone; % returns boolean 'measurementsDone'
 
 % Populating the '.measurements' field with the measurements associated 
 % with the cross sectional (CS) slicer routine:

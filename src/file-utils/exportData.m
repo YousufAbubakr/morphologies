@@ -12,10 +12,6 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-clc; % clearing command window
-
-warning('off','all') % turning on warnings
-
 % Getting workspace variables at the start of the new script:
 varsbefore = who;
 
@@ -33,6 +29,9 @@ if cfg.overwrite.measures || ~measurementsDone
         writeSubjectData(subj, cfg);
     end
     fprintf("Subjects have been written to 'data/measurements' directory!\n");
+else
+    fprintf("Subjects have already been written to 'data/measurements' directory!\n");
+    return;
 end
 
 %% MATLAB CLEANUP

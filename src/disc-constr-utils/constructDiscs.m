@@ -12,13 +12,20 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-clc; % clearing command window
-
 % Getting workspace variables at the start of the new script:
 varsbefore = who;
 
 %% DISC STL CONSTRUCTION
 % Loading mesh data into 'subjectData'
+
+% Skipping if measurements are already done:
+if measurementsDone
+    fprintf('Measurements have already done --> skipping disc construction!\n');
+    return;
+end
+
+% Starting rountine clock:
+tic;
 
 n = subjectData.numSubjects; % number of subjects
 
@@ -168,6 +175,7 @@ if showDiscMetadata
         plotDiscs(subjectData.subject(j));
     end
 end
+fprintf('Disc construction done in %.2f seconds (%.2f minutes)!\n', toc, toc/60);
 
 %% MATLAB CLEANUP
 % Deleting extraneous subroutine variables:
