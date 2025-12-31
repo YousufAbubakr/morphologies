@@ -33,15 +33,14 @@ fprintf('Summarizing measurements ...\n');
 %       Structure : vertebra & disc
 %       Grouping  : kyphotic (blue) VS control (red)
 %       Plot Type : line
-%       Axes      : X, Y, and Z (vertebra) and Z (disc)
-plotRawSlicer(Tslice,'CSA','Structure','vertebra','Group','separate', 'AxesList', 'XYZ')
-plotRawSlicer(Tslice,'CSA','Structure','disc','Group','separate','AxesList', 'Z')
+%       Axes      : X, Y, and Z
+plotRawSlicer(Tslice,'CSA','Structure','vertebra','Group','separate', 'AxesList',)
+plotRawSlicer(Tslice,'CSA','Structure','disc','Group','separate')
 
 % ---- Height measurements (using the following settings) ----
-%       Structure : vertebra & disc
-%       Grouping  : kyphotic (blue) VS control (red)
-%       PlotType  : line
-%       Axes      : LAT and AP
+%       Structure: vertebra & disc
+%       Grouping : kyphotic (blue) VS control (red)
+%       PlotType : line
 plotRawHeight(Theight,'Height','Structure','vertebra','Group','separate')
 plotRawHeight(Theight,'Height','Structure','disc','Group','separate')
 
@@ -49,12 +48,11 @@ plotRawHeight(Theight,'Height','Structure','disc','Group','separate')
 %       Structure: vertebra & disc
 %       Grouping : kyphotic (blue) VS control (red)
 %       PlotType : line
-plotRawVolume(Tvolume,'Structure','vertebra')
-plotRawVolume(Tvolume,'Structure','disc')
+%plotRawMeasurement(Tslice,'CSA','Structure','vertebra','Group','separate')
+%plotRawMeasurement(Tslice,'CSA','Structure','disc','Group','separate')
 
 %% MATLAB CLEANUP
 % Clearing leftover workspace variables, except the measurement tables:
 clearvars -except Tslice Theight Tvolume cfg;
 
 clc; % clearing command window
-

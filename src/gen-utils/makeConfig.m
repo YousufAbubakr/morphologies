@@ -1,5 +1,12 @@
 function cfg = makeConfig(projectPath)
-% Creating a config builder function
+% Creating a config builder function that determines the measurement
+% procedures of the pipeline. If any of the following high level parameters
+% are changed according to the previously defined settings in the saved
+% files at 'data\measurements', then the measurements will be rewritten:
+%           1.) cfg.measurements.numSlices
+%           2.) cfg.measurements.heightResolution
+%           3.) cfg.measurements.slicerIgnorance
+%           4.) cfg.measurements.slicerIgnorance
 
     % -------------------------------
     % Path information
@@ -65,12 +72,12 @@ function cfg = makeConfig(projectPath)
     % Slicer measurements are generally poorly calculated around the
     % boundaries of the geometries, so the inferior and superior width
     % measurements will be set to 0, given by the following tolerance:
-    cfg.measurements.slicerIgnorance = 0.1; % 0 <= slicerIgnorance < 0.5
-    cfg.measurements.heightIgnorance = 0.2; % 0 <= heightIgnorance < 0.5
+    cfg.measurements.slicerIgnorance = 0.1; % 0 <= slicerIgnorance < 0.5, <--- if changed, files will be rewritten
+    cfg.measurements.heightIgnorance = 0.2; % 0 <= heightIgnorance < 0.5, <--- if changed, files will be rewritten
 
     % Measurement frequencies:
-    cfg.measurements.numSlices = 100;
-    cfg.measurements.heightResolution = 100;
+    cfg.measurements.numSlices = 100; % <--- if changed, files will be rewritten
+    cfg.measurements.heightResolution = 100; % <--- if changed, files will be rewritten
 
 
     % -------------------------------

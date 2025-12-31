@@ -1,27 +1,22 @@
-function plotRawMeasurement(T, yvar, varargin)
-% Plots raw slice-wise measurements vs slice position, separated by
-% anatomical plane (X, Y, Z).
+function plotRawHeight(T, yvar, varargin)
+% Plots raw height measurements vs slice position, separated by
+% direction (LAT, AP).
 %
 % INPUTS
 % ------
-% T     : table returned by buildMeasurementTable()
-% yvar  : string or char, name of scalar measurement column
-%         e.g. 'CSA', 'WidthMean'
+% T     : table returned by buildMeasurementTable() or height table
+% yvar  : string or char, name of height column
+%         e.g. 'Height'
 %
 % OPTIONAL NAME-VALUE PAIRS
 % -------------------------
-% 'Group'      : 'none' (default) | 'kyphotic'
+% 'Group'      : 'separate' (default) | 'kyphotic'
 % 'PlotType'   : 'line' (default) | 'scatter'
 % 'Structure'  : 'vertebra' | 'disc' | 'all' (default)
-% 'Alpha'      : transparency
+% 'Alpha'      : transparency (default)
 %
 % Control subjects  -> red
 % Kyphotic subjects -> blue
-%
-% EXAMPLE
-% -------
-% plotRawMeasurement(T,'CSA','Group','kyphotic')
-% plotRawMeasurement(T,'Width','PlotType','scatter')
 
     % -----------------------------
     % Parse inputs
@@ -33,7 +28,7 @@ function plotRawMeasurement(T, yvar, varargin)
     addParameter(p,'Group','separate',@(x)ischar(x)||isstring(x));
     addParameter(p,'PlotType','line',@(x)ischar(x)||isstring(x));
     addParameter(p,'Structure','all',@(x)ischar(x)||isstring(x));
-    addParameter(p,'Alpha',0.15,@(x)isnumeric(x)&&isscalar(x));
+    addParameter(p,'Alpha',0.3,@(x)isnumeric(x)&&isscalar(x));
 
     parse(p,T,yvar,varargin{:});
     opt = p.Results;
@@ -66,26 +61,26 @@ function plotRawMeasurement(T, yvar, varargin)
         yvar, opt.Structure, opt.PlotType), ...
         'FontWeight','bold');
 
-    axesList = {'X','Y','Z'};
+    directions = {'LAT','AP'};
 
     % -----------------------------
-    % Loop over anatomical planes
+    % Loop over directions
     % -----------------------------
-    for a = 1:3
-        axName = axesList{a};
-        subplot(1,3,a); hold on;
+    for d = 1:2
+        dirName = directions{d};
+        subplot(1,2,d); hold on;
 
-        % --- Filter table by plane ---
-        T_ax = T(T.Axis == axName,:);
-        if isempty(T_ax)
-            title(axName + " plane (no data)");
+        % --- Filter table by direction ---
+        T_dir = T(T.Axis == dirName,:);
+        if isempty(T_dir)
+            title(dirName + " (no data)");
             continue;
         end
 
-        % --- Pick correct slice coordinate ---
-        sliceVar = "SlicePos";
-        if ~ismember(sliceVar, T_ax.Properties.VariableNames)
-            error('Missing column "%s" in table.', sliceVar);
+        % --- Slice coordinate ---
+        coordVar = "Coord";
+        if ~ismember(coordVar, T_dir.Properties.VariableNames)
+            error('Missing column "%s" in table.', coordVar);
         end
 
         % --- Legend handles (dummy) ---
@@ -96,10 +91,10 @@ function plotRawMeasurement(T, yvar, varargin)
         for g = [0 1]  % 0 = control, 1 = kyphotic
 
             if g == 0
-                T_g = T_ax(T_ax.isKyphotic == 0,:);
+                T_g = T_dir(T_dir.isKyphotic == 0,:);
                 color = col.control;
             else
-                T_g = T_ax(T_ax.isKyphotic == 1,:);
+                T_g = T_dir(T_dir.isKyphotic == 1,:);
                 color = col.kyphotic;
             end
 
@@ -108,12 +103,12 @@ function plotRawMeasurement(T, yvar, varargin)
             end
 
             % Group by subject + level
-            [G, ~] = findgroups(T_g.SubjectID, T_g.Level);
+            [G, ~] = findgroups(T_g.SubjectID, T_g.LevelName);
 
             for k = 1:max(G)
                 idx = (G == k);
 
-                x = T_g.(sliceVar)(idx);
+                x = T_g.(coordVar)(idx);
                 y = T_g.(yvar)(idx);
 
                 switch lower(opt.PlotType)
@@ -130,19 +125,18 @@ function plotRawMeasurement(T, yvar, varargin)
             end
         end
 
-        % --- Labels, legend, cosmetics ---
-        xlabel(sprintf('%s coordinate', axName));
+        % --- Labels & cosmetics ---
+        xlabel('Axis position');
         ylabel(yvar);
 
         title(sprintf( ...
-            '%s plane | %s | %s', ...
-            axName, yvar, opt.Structure));
+            '%s direction | %s | %s', ...
+            dirName, yvar, opt.Structure));
 
         legend([hControl hKyphotic], ...
             {'Control','Kyphotic'}, ...
             'Location','best');
 
-        grid off;
         box on;
     end
 end
