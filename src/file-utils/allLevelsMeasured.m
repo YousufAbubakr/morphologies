@@ -27,6 +27,10 @@ function tf = allLevelsMeasured(subj, savedConfig, cfg)
     end
 
     % ---- Vertebrae ----
+    if ~isfield(subj.vertebrae, 'measurements')
+        tf = false;
+        return
+    end
     meas = subj.vertebrae.measurements;
 
     % Sanity checking measurement struc array:
@@ -73,6 +77,10 @@ function tf = allLevelsMeasured(subj, savedConfig, cfg)
     end
     
     % ---- Discs ----
+    if ~isfield(subj.discs, 'measurements')
+        tf = false;
+        return
+    end
     meas = subj.discs.measurements;
 
     % Sanity checking measurement struc array:

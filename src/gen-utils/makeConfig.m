@@ -69,8 +69,8 @@ function cfg = makeConfig(projectPath)
     cfg.measurements.heightIgnorance = 0.2; % 0 <= heightIgnorance < 0.5
 
     % Measurement frequencies:
-    cfg.measurements.numSlices = 25;
-    cfg.measurements.heightResolution = 25;
+    cfg.measurements.numSlices = 100;
+    cfg.measurements.heightResolution = 100;
 
 
     % -------------------------------
