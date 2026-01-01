@@ -29,28 +29,31 @@ fprintf('Summarizing measurements ...\n');
 % Visualizing the raw data; accounting for each experiemental group, {X,Y,Z}
 % direction, and measurement types {csa, widths, etc}
 
+% Endpoint spinal levels to be visualized ([] = all levels):
+levels = ["T14","L3"]; % choosing levels associated with major apex region
+
 % ---- Slicer measurements (using the following settings) ----
 %       Structure : vertebra & disc
 %       Grouping  : kyphotic (blue) VS control (red)
 %       Plot Type : line
 %       Axes      : X, Y, and Z (vertebra) and Z (disc)
-plotRawSlicer(Tslice,'CSA','Structure','vertebra','Group','separate', 'AxesList', 'XYZ')
-plotRawSlicer(Tslice,'CSA','Structure','disc','Group','separate','AxesList', 'Z')
+plotRawSlicer(Tslice,'CSA','Structure','vertebra','Group','separate', 'AxesList', 'XYZ','Levels',levels)
+plotRawSlicer(Tslice,'CSA','Structure','disc','Group','separate','AxesList', 'Z','Levels',levels)
 
 % ---- Height measurements (using the following settings) ----
 %       Structure : vertebra & disc
 %       Grouping  : kyphotic (blue) VS control (red)
 %       PlotType  : line
 %       Axes      : LAT and AP
-plotRawHeight(Theight,'Height','Structure','vertebra','Group','separate')
-plotRawHeight(Theight,'Height','Structure','disc','Group','separate')
+plotRawHeight(Theight,'Height','Structure','vertebra','Group','separate','Levels',levels)
+plotRawHeight(Theight,'Height','Structure','disc','Group','separate','Levels',levels)
 
 % ---- Volume measurements (using the following settings) ----
 %       Structure: vertebra & disc
 %       Grouping : kyphotic (blue) VS control (red)
 %       PlotType : line
-plotRawVolume(Tvolume,'Structure','vertebra')
-plotRawVolume(Tvolume,'Structure','disc')
+plotRawVolume(Tvolume,'Structure','vertebra','Levels',levels)
+plotRawVolume(Tvolume,'Structure','disc','Levels',levels)
 
 %% MATLAB CLEANUP
 % Clearing leftover workspace variables, except the measurement tables:

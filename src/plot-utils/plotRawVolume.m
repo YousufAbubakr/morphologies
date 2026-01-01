@@ -29,9 +29,17 @@ function plotRawVolume(T, varargin)
     addParameter(p,'Structure','all',@(x)ischar(x)||isstring(x));
     addParameter(p,'PlotType','line',@(x)ischar(x)||isstring(x));
     addParameter(p,'Alpha',0.3,@(x)isnumeric(x)&&isscalar(x));
+    addParameter(p,'Levels',[],@(x)isstring(x)||iscellstr(x));
 
     parse(p,T,varargin{:});
     opt = p.Results;
+
+    % ----------------------------------
+    % Optional level filtering
+    % ----------------------------------
+    if ~isempty(opt.Levels)
+        T = filterTableByLevels(T, opt.Levels);
+    end
 
     % ----------------------------------
     % Filter by structure
@@ -42,7 +50,7 @@ function plotRawVolume(T, varargin)
     
     % Remove unused categories
     T.LevelName = removecats(T.LevelName);
-    
+
     % ----------------------------------
     % Build structure-specific x-axis
     % ----------------------------------

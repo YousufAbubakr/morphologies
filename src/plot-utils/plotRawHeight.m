@@ -29,6 +29,7 @@ function plotRawHeight(T, yvar, varargin)
     addParameter(p,'PlotType','line',@(x)ischar(x)||isstring(x));
     addParameter(p,'Structure','all',@(x)ischar(x)||isstring(x));
     addParameter(p,'Alpha',0.3,@(x)isnumeric(x)&&isscalar(x));
+    addParameter(p,'Levels',[],@(x)isstring(x)||iscellstr(x));
 
     parse(p,T,yvar,varargin{:});
     opt = p.Results;
@@ -36,6 +37,13 @@ function plotRawHeight(T, yvar, varargin)
 
     if ~ismember(yvar, T.Properties.VariableNames)
         error('Column "%s" not found in table.', yvar);
+    end
+
+    % ----------------------------------
+    % Optional level filtering
+    % ----------------------------------
+    if ~isempty(opt.Levels)
+        T = filterTableByLevels(T, opt.Levels);
     end
 
     % -----------------------------
