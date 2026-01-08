@@ -144,7 +144,7 @@ alignGeometries; % appends alignment metadata into 'subjectData'
 
 % Populating the '.measurements' field with the measurements associated 
 % with the cross sectional (CS) slicer routine:
-makeSlicerMeasurements; % populates 'subjectData' with slicer-based measurements
+%makeSlicerMeasurements; % populates 'subjectData' with slicer-based measurements
 
 % Populating the '.measurements' field with height measurements:
 makeHeightMeasurements; % populates 'subjectData' with height-based measurements
@@ -158,10 +158,6 @@ makeVolumeMeasurements; % populates 'subjectData' with volume-based measurements
 % 'data/raw' directory will be populated with 'XXX.mat' files,
 % where 'XXX' refers to the subject name (ID) of each porcine subject:
 exportData; % if measurements are not done or set to be written, files will be written here
-
-% Clearing leftover workspace variables, using only the 'data/measurements'
-% files for the analysis section:
-clearvars -except cfg;
 
 %% ANALYSIS
 % Displaying raw measurement data in 'data/measurements' and comparing 

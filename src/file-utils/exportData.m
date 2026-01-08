@@ -28,17 +28,12 @@ if cfg.overwrite.measures || ~measurementsDone
         % Write to 'data/measurements' directory:
         writeSubjectData(subj, cfg);
     end
-    fprintf("Subjects have been written to 'data/measurements' directory!\n");
+    fprintf("Subjects have been written to 'data/raw' directory!\n");
 else
-    fprintf("Subjects have already been written to 'data/measurements' directory!\n");
-    return;
+    fprintf("Subjects have already been written to 'data/raw' directory!\n");
 end
 
 %% MATLAB CLEANUP
-% Deleting extraneous subroutine variables:
-varsafter = who; % get names of all variables in 'varsbefore' plus variables
-varsremove = setdiff(varsafter, varsbefore); % variables  defined in the script
-varskeep = {''};
-varsremove(ismember(varsremove, varskeep)) = {''};
-clear(varsremove{:})
+% Clearing leftover workspace variables, except the cfg:
+clearvars -except cfg;
 

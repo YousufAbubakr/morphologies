@@ -32,6 +32,7 @@ git clone https://github.com/YousufAbubakr/morphologies.git
  ┃ ┃ ┣ 📜SubjectB.mat
  ┃ ┃ ┣ ...
  ┃ ┣ 📂summary               ← directory of summary morphology data for SPM analysis
+ ┣ 📂docs                    ← helpful documentation
  ┣ 📂src                     ← utility, analysis, and pipeline codes
  ┃ ┣ 📂align-utils
  ┃ ┣ 📂analysis-utils  
