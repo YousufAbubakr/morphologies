@@ -5,7 +5,7 @@
 % File: summarizeData.m
 % Author: Yousuf Abubakr
 % Project: Morphologies
-% Last Updated: 1-1-2026
+% Last Updated: 1-10-2026
 %
 % Description: transporting subject data from 'data/measurements' files,
 % summarizing it all into easy-to-use data structures, visualizing the
@@ -55,6 +55,29 @@ plotRawHeight(Theight,'Height','Structure','disc','Group','separate','Levels',le
 plotRawVolume(Tvolume,'Structure','vertebra','Levels',levels)
 plotRawVolume(Tvolume,'Structure','disc','Levels',levels)
 
+%% BODY LEVEL MORPHOLOGY ANALYSIS
+% Performing level-specific two-sample t-tests on body level morphology
+% metrics (i.e. volume)
+
+% Endpoint spinal levels to be exported:
+levelRange = cfg.summary.levelsExported;
+
+% Computing level-wise t-tests from volume summary table:
+[TvolVertStats, volVertStats] = levelwiseTtests(Tvolume, 'vertebra', levelRange);
+[TvolDiscStats, volDiscStats] = levelwiseTtests(Tvolume, 'disc', levelRange);
+
+% Visualizing level-wise t-tests from volume summary table:
+plotLevelwiseStats( ...
+    TvolVertStats, 'vertebra', ...
+    'YLabel','Volume (mm^3)', ...
+    'Title','Vertebral Body Volume (Level-wise)', ...
+    'UseQ', true);
+plotLevelwiseStats( ...
+    TvolDiscStats, 'disc', ...
+    'YLabel','Volume (mm^3)', ...
+    'Title','Disc Body Volume (Level-wise)', ...
+    'UseQ', true);
+
 %% SPM EXTRACT
 % Extracting SPM-ready matrices from the measumrent tables
 
@@ -67,26 +90,23 @@ plotRawVolume(Tvolume,'Structure','disc','Levels',levels)
 % Each native measurement will have a kyphotic and control SPM data array
 % associated with it.
 
-% Endpoint spinal levels to be exported:
-levels = cfg.summary.levelsExported;
-
 % ---- Slicer summary arrays (vertebra and disc, Z-axis, CSA) ----
 [YcVertZ, YkVertZ, metaVertZ] = buildLevelStackedArray( ...
-    Tslice, 'csa', 'Z', 'vertebra', levels);
+    Tslice, 'csa', 'Z', 'vertebra', levelRange);
 
 [YcDiscZ, YkDiscZ, metaDiscZ] = buildLevelStackedArray( ...
-    Tslice, 'csa', 'Z', 'disc', levels);
+    Tslice, 'csa', 'Z', 'disc', levelRange);
 
 % ---- Height summary arrays (vertebra and disc, LAT and AP, Height) ----
 [YcVertLAT, YkVertLAT, metaVertLAT] = buildLevelStackedArray( ...
-    Theight, 'height', 'LAT', 'vertebra', levels);
+    Theight, 'height', 'LAT', 'vertebra', levelRange);
 [YcDiscLAT, YkDiscLAT, metaDiscLAT] = buildLevelStackedArray( ...
-    Theight, 'height', 'LAT', 'disc', levels);
+    Theight, 'height', 'LAT', 'disc', levelRange);
 
 [YcVertAP, YkVertAP, metaVertAP] = buildLevelStackedArray( ...
-    Theight, 'height', 'AP', 'vertebra', levels);
+    Theight, 'height', 'AP', 'vertebra', levelRange);
 [YcDiscAP, YkDiscAP, metaDiscAP] = buildLevelStackedArray( ...
-    Theight, 'height', 'AP', 'disc', levels);
+    Theight, 'height', 'AP', 'disc', levelRange);
 
 % Scalar measurements like volume are position-based sampled measurements.
 % SPM requires a 2D matrix as its input, so these measurements will be set
@@ -94,10 +114,10 @@ levels = cfg.summary.levelsExported;
 %       N = total number subjects
 %       Q = number of resolved levels (ordered spinal levels)
 [YcVertVol, YkVertVol, levelsVertVol] = buildScalarSPMArrays( ...
-    Tvolume,'Structure','vertebra','LevelRange',levels);
+    Tvolume,'Structure','vertebra','LevelRange',levelRange);
 
 [YcDiscVol, YkDiscVol, levelsDiscVol] = buildScalarSPMArrays( ...
-    Tvolume, 'Structure','disc','LevelRange',levels);
+    Tvolume, 'Structure','disc','LevelRange',levelRange);
 
 %% EXPORTING
 % Exporting 2D summary arrays to 'data\summary' for Python SPM analysis

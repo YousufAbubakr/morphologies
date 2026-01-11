@@ -18,6 +18,10 @@ warning('on','all') % turning on warnings
 
 format compact; % suppressing blank lines and decreasing spacing in the CW
 
+% Setting default of figures (fitted for JOR Spine):
+set(groot, 'DefaultTextFontName', 'Helvetica');
+set(groot, 'DefaultAxesFontName', 'Helvetica');
+
 %% DIRECTORY INFORMATION
 % Storing names of all necessary directories. ASSUMPTION: directories and 
 % stl geometry files are configured according to setup described in the 
@@ -144,7 +148,7 @@ alignGeometries; % appends alignment metadata into 'subjectData'
 
 % Populating the '.measurements' field with the measurements associated 
 % with the cross sectional (CS) slicer routine:
-%makeSlicerMeasurements; % populates 'subjectData' with slicer-based measurements
+makeSlicerMeasurements; % populates 'subjectData' with slicer-based measurements
 
 % Populating the '.measurements' field with height measurements:
 makeHeightMeasurements; % populates 'subjectData' with height-based measurements
