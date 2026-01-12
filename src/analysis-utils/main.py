@@ -44,10 +44,8 @@ from loadSummaryData import (lvlRangeVertAP, lvlRangeVertLAT, lvlRangeVertVol, l
 runSPM1D(Yc=YcVertAP,Yk=YkVertAP,lvlRange=lvlRangeVertAP,title="Height (AP) - Vertebra",ylabel="inf-sup height [mm]")
 runSPM1D(Yc=YcVertLAT,Yk=YkVertLAT,lvlRange=lvlRangeVertLAT,title="Height (LAT) - Vertebra",ylabel="inf-sup height [mm]")
 runSPM1D(Yc=YcVertZ,Yk=YkVertZ,lvlRange=lvlRangeVertZ,title="CSA (Z) - Vertebra",ylabel="csa [mm²]")
-runSPM1D(Yc=YcVertVol,Yk=YkVertVol,lvlRange=lvlRangeVertVol,xMode="levels",title="Volume - Vertebra",ylabel="volume [mm³]")
 
 runSPM1D(Yc=YcDiscAP,Yk=YkDiscAP,lvlRange=lvlRangeDiscAP,title="Height (AP) - Disc",ylabel="inf-sup height [mm]")
 runSPM1D(Yc=YcDiscLAT,Yk=YkDiscLAT,lvlRange=lvlRangeDiscLAT,title="Height (LAT) - Disc",ylabel="inf-sup height [mm]")
 runSPM1D(Yc=YcDiscZ,Yk=YkDiscZ,lvlRange=lvlRangeDiscZ,title="CSA (Z) - Disc",ylabel="csa [mm³]")
-runSPM1D(Yc=YcDiscVol,Yk=YkDiscVol,lvlRange=lvlRangeDiscVol,xMode="levels",title="Volume - Disc",ylabel="volume [mm³]")
 

@@ -47,20 +47,20 @@ function plotLevelwiseStats(Tstats, structure, varargin)
     errorbar(x, Tstats.MeanC, Tstats.StdC, ...
         'o-','Color',[0.8 0.2 0.2], ...
         'MarkerFaceColor',[0.8 0.2 0.2], ...
-        'LineWidth',1.5);
+        'LineWidth',3);
 
     % --- Kyphotic ---
     errorbar(x, Tstats.MeanK, Tstats.StdK, ...
         'o-','Color',[0.2 0.2 0.8], ...
         'MarkerFaceColor',[0.2 0.2 0.8], ...
-        'LineWidth',1.5);
+        'LineWidth',3);
 
     % --- Significance markers ---
     yMax = max([Tstats.MeanC + Tstats.StdC, ...
                 Tstats.MeanK + Tstats.StdK], [], 2);
     yStar = yMax * 1.05;
 
-    plot(x(sig), yStar(sig), 'k*', 'MarkerSize', 8)
+    plot(x(sig), yStar(sig), 'k*', 'MarkerSize', 12)
 
     % -------------------------
     % Formatting
@@ -70,6 +70,17 @@ function plotLevelwiseStats(Tstats, structure, varargin)
 
     ylabel(opts.YLabel)
     xlabel('Spinal Level')
+    ymin = 0;
+    ylim([ymin Inf]);
+
+    % Get the current axes handle
+    ax = gca;
+    
+    % Set the Exponent property to 0 to prevent scientific notation
+    ax.YAxis.Exponent = 0;
+    
+    % Use ytickformat to ensure integer display without decimals
+    ytickformat('%.0f');
 
     legend({'Control (mean ± SD)','Kyphotic (mean ± SD)','Significant'}, ...
            'Location','best')

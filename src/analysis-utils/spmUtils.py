@@ -3,7 +3,7 @@ import spm1d
 import numpy as np
 import matplotlib.pyplot as plt
 
-def runSPM1D(Yc,Yk,lvlRange,*,xMode="norm",alpha=0.05,equal_var=False,two_tailed=False,title="",ylabel="Measurement"):
+def runSPM1D(Yc, Yk, lvlRange, *,xMode="norm",alpha=0.05,equal_var=False,two_tailed=False,plotRaw=False,overlaySPM=False,title="",ylabel="Measurement"):
     """
     Runs two-sample 1D SPM t-test and plots results.
 
@@ -12,42 +12,29 @@ def runSPM1D(Yc,Yk,lvlRange,*,xMode="norm",alpha=0.05,equal_var=False,two_tailed
     Yc, Yk : (N x Q) arrays
         Control and kyphotic summary arrays
     lvlRange : (M,) array
-        string array of levels associated with measurement
-    xMode : str
-        "normalized" or "levels" for x-axis mode
-    alpha : float
-        Significance level
-    equal_var : bool
-        Assume equal variance?
-    two_tailed : bool
-        Two-tailed test if True
-    title : str
-        Plot title
+        Levels associated with measurement
+    plotRaw : bool
+        If True, plot individual subject curves
+    overlaySPM : bool
+        If True, plot SPM statistics and mean and STD clouds on the same axes
     """
 
-    Q  = Yc.shape[1] # sampling frequency (for scalar vars, Q = # of levels)
+    plt.rcParams["font.family"] = "serif"
+    plt.rcParams["font.serif"] = ["Times New Roman"]
+
+    Q = Yc.shape[1]
 
     ## DATA PROCESSING ##
-    # SPM does NOT automatically handle NaNs node-wise, so we will 
-    # mask invalid continuum points away before t-tesing
     mask = validNodes(Yc, Yk)
-    Yc = Yc[:, mask]; Yk = Yk[:, mask]
-
-    # -------------------------
-    # Sanity checks
-    # -------------------------
-    assert Yc.ndim == 2 and Yk.ndim == 2
-    assert Yc.shape[1] == Yk.shape[1]
+    Yc = Yc[:, mask]
+    Yk = Yk[:, mask]
 
     if not np.any(mask):
         raise RuntimeError("No valid nodes remain after masking.")
-
     if Yc.shape[0] < 2 or Yk.shape[0] < 2:
         raise RuntimeError("Insufficient subjects after cleaning.")
 
-    # -------------------------
-    # Two-sample t-test
-    # -------------------------
+    ## SPM TEST ##
     ttest = spm1d.stats.ttest2(Yc, Yk, equal_var=equal_var)
     inference = ttest.inference(
         alpha=alpha,
@@ -55,45 +42,138 @@ def runSPM1D(Yc,Yk,lvlRange,*,xMode="norm",alpha=0.05,equal_var=False,two_tailed
         interp=True
     )
 
-    # -------------------------
-    # Plot
-    # -------------------------
-    fig = plt.figure(figsize=(10, 6))
+    ## PLOTTING ##
+    target_size_inches = 6.4
+    fig = plt.figure(figsize=(target_size_inches, target_size_inches))
 
-    # --- Mean ± SD ---
-    ax0 = fig.add_subplot(211)
-    spm1d.plot.plot_mean_sd(Yc, ax=ax0, 
-                            linecolor='r', facecolor=(1,0.7,0.7), 
-                            edgecolor='r', label='Control')
-    spm1d.plot.plot_mean_sd(Yk,ax=ax0, 
-                            linecolor='b', facecolor=(0.7,0.7,1), 
-                            edgecolor='b', label='Kyphotic')
+    # ==========================
+    # OVERLAY MODE
+    # ==========================
+    if overlaySPM:
 
-    ax0.set_ylabel(ylabel)
-    ax0.legend()
-    ax0.set_title(title + ' (Levels: ' + lvlRange[0] + ' --> '+ lvlRange[-1] + ')')
+        ax = fig.add_subplot(111)
 
-    # --- SPM{t} ---
-    ax1 = fig.add_subplot(212, sharex=ax0)
-    inference.plot(ax=ax1)
-    inference.plot_threshold_label(ax=ax1)
-    inference.plot_p_values(ax=ax1)
+        x = np.arange(Yc.shape[1])
 
-    ax1.set_ylabel("SPM{t}")
+        # --- Raw curves ---
+        if plotRaw:
+            for i in range(Yc.shape[0]):
+                ax0.plot(x, Yc[i, :], color='r', alpha=0.25, linewidth=0.8)
+            for i in range(Yk.shape[0]):
+                ax0.plot(x, Yk[i, :], color='b', alpha=0.25, linewidth=0.8)
 
-    if xMode == "norm":
-        # normalizing x-axis: relabeling from [0, Yc.shape[1] - 1] to [0.0, 1.0]
-        nn = 6; xticks = np.linspace(0, Yc.shape[1] - 1, nn)
-        xticklabels = np.linspace(0, 100, nn)
-        ax1.set_xticks(xticks); ax1.set_xticklabels([f'{x:.1f}' for x in xticklabels])
-        ax1.set_xlabel("Measurement domain (%)")
-    elif xMode == "levels":
-        # normalizing x-axis: relabel from [0.0, 1.0] to lvlRange
-        nn = len(lvlRange); xticks = np.linspace(0, Yc.shape[1] - 1, nn)
-        ax1.set_xticks(xticks); ax1.set_xticklabels(lvlRange)
-        ax1.set_xlabel("Spinal position")
+        ax.set_ylabel(ylabel)
+
+        # --- SPM axis ---
+        ax_spm = ax.twinx()
+        inference.plot(ax=ax_spm, color='k', lw=1.25)
+        inference.plot_threshold_label(ax=ax_spm)
+        inference.plot_p_values(ax=ax_spm)
+
+        ax_spm.set_ylabel("SPM{t}")
+
+        # --------------------------
+        # Plot means
+        # --------------------------
+        mc = np.nanmean(Yc, axis=0)
+        mk = np.nanmean(Yk, axis=0)
+
+        ax.plot(
+            x, mc,
+            color='r',
+            linewidth=2.5,
+            label='Control',
+            zorder=10
+        )
+        ax.plot(
+            x, mk,
+            color='b',
+            linewidth=2.5,
+            label='Kyphotic',
+            zorder=10
+        )
+
+        # --- Title ---
+        ax.set_title(
+            title + ' (Levels: ' + lvlRange[0] + ' → ' + lvlRange[-1] + ')'
+        )
+
+        # --- Legend (measurement only) ---
+        ax.legend(loc='upper left')
+
+        # --- X-axis handling ---
+        if xMode == "norm":
+            nn = 6
+            xticks = np.linspace(0, Yc.shape[1] - 1, nn)
+            xticklabels = np.linspace(0, 100, nn)
+            ax.set_xticks(xticks)
+            ax.set_xticklabels([f"{x:.0f}" for x in xticklabels])
+            ax.set_xlabel("Measurement domain (%)")
+
+        elif xMode == "levels":
+            xticks = np.arange(len(lvlRange))
+            ax.set_xticks(xticks)
+            ax.set_xticklabels(lvlRange)
+            ax.set_xlabel("Spinal position")
+
+        else:
+            raise ValueError("xMode must be 'norm' or 'levels'.")
+
+    # ==========================
+    # CLASSIC 2-PANEL MODE
+    # ==========================
     else:
-        raise ValueError("xMode must be 'normalized' or 'levels'!")
+        ax0 = fig.add_subplot(211)
+
+        x = np.arange(Yc.shape[1])
+
+        spm1d.plot.plot_mean_sd(Yc, ax=ax0,
+                                linecolor='r',
+                                facecolor=(1,0.7,0.7),
+                                edgecolor='r',
+                                label='Control')
+        spm1d.plot.plot_mean_sd(Yk, ax=ax0,
+                                linecolor='b',
+                                facecolor=(0.7,0.7,1),
+                                edgecolor='b',
+                                label='Kyphotic')
+        
+        # --- Raw curves ---
+        if plotRaw:
+            for i in range(Yc.shape[0]):
+                ax0.plot(x, Yc[i, :], color='r', alpha=0.25, linewidth=0.8)
+            for i in range(Yk.shape[0]):
+                ax0.plot(x, Yk[i, :], color='b', alpha=0.25, linewidth=0.8)
+
+        ax0.set_ylabel(ylabel)
+        ax0.legend()
+        ax0.set_title(
+            title + ' (Levels: ' + lvlRange[0] + ' → ' + lvlRange[-1] + ')'
+        )
+
+        ax1 = fig.add_subplot(212, sharex=ax0)
+        inference.plot(ax=ax1)
+        inference.plot_threshold_label(ax=ax1)
+        inference.plot_p_values(ax=ax1)
+
+        ax1.set_ylabel("SPM{t}")
+
+        if xMode == "norm":
+            nn = 6
+            xticks = np.linspace(0, Yc.shape[1] - 1, nn)
+            xticklabels = np.linspace(0, 100, nn)
+            ax1.set_xticks(xticks)
+            ax1.set_xticklabels([f"{x:.0f}" for x in xticklabels])
+            ax1.set_xlabel("Measurement domain (%)")
+
+        elif xMode == "levels":
+            xticks = np.arange(len(lvlRange))
+            ax1.set_xticks(xticks)
+            ax1.set_xticklabels(lvlRange)
+            ax1.set_xlabel("Spinal position")
+
+        else:
+            raise ValueError("xMode must be 'norm' or 'levels'.")
 
     plt.tight_layout()
     plt.show()
