@@ -6,7 +6,8 @@ function [meanBegin, meanEnd, idxBegin, idxEnd] = edgeMeans(x, rl, ru)
 % APru   : upper fraction (e.g., 0.15)
 
     x = x(:);            % ensure column vector
-    n = numel(x);
+    xClean = x(~isnan(x));    % clears nan values
+    n = numel(xClean); nReal = numel(x);
 
     % Convert fractions to indices
     iL = max(1, round(rl * n));
@@ -19,7 +20,12 @@ function [meanBegin, meanEnd, idxBegin, idxEnd] = edgeMeans(x, rl, ru)
     idxEnd = (n - iU + 1):(n - iL + 1);
 
     % Mean (ignore NaNs if present)
-    meanBegin  = mean(x(idxBegin), 'omitnan');
-    meanEnd = mean(x(idxEnd), 'omitnan');
+    meanBegin  = mean(xClean(idxBegin), 'omitnan');
+    meanEnd = mean(xClean(idxEnd), 'omitnan');
+
+    % Readjusting indexes:
+    iLReal = find(x == xClean(iL)); iUReal = find(x == xClean(iU));
+    idxBegin = iLReal:iUReal;
+    idxEnd = (nReal - iUReal):(nReal - iLReal);
 end
 
