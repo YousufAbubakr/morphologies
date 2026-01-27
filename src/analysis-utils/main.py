@@ -28,14 +28,14 @@ from spmUtils import runSPM1D
 #           --> for example, YcVertZ = (control, vertebra, CSA, Z-axis)
 # Variable can be accessed like so: loadSummaryData.Yc{struc}{axis}
 
-from loadSummaryData import (YcVertAP, YcVertLAT, YcVertVol, YcVertZ, 
-                             YkVertAP, YkVertLAT, YkVertVol, YkVertZ)
+from loadSummaryData import (YcVertAP, YcVertLAT, YcVertZ, 
+                             YkVertAP, YkVertLAT, YkVertZ)
 
-from loadSummaryData import (YcDiscAP, YcDiscLAT, YcDiscVol, YcDiscZ, 
-                             YkDiscAP, YkDiscLAT, YkDiscVol, YkDiscZ)
+from loadSummaryData import (YcDiscAP, YcDiscLAT, YcDiscZ, 
+                             YkDiscAP, YkDiscLAT, YkDiscZ)
 
-from loadSummaryData import (lvlRangeVertAP, lvlRangeVertLAT, lvlRangeVertVol, lvlRangeVertZ, 
-                             lvlRangeDiscAP, lvlRangeDiscLAT, lvlRangeDiscVol, lvlRangeDiscZ)
+from loadSummaryData import (lvlRangeVertAP, lvlRangeVertLAT, lvlRangeVertZ, 
+                             lvlRangeDiscAP, lvlRangeDiscLAT, lvlRangeDiscZ)
 
 ## SPM ANALYSIS ##
 # Running continuous two-sample t-tests and plotting results
@@ -48,4 +48,41 @@ runSPM1D(Yc=YcVertZ,Yk=YkVertZ,lvlRange=lvlRangeVertZ,title="CSA (Z) - Vertebra"
 runSPM1D(Yc=YcDiscAP,Yk=YkDiscAP,lvlRange=lvlRangeDiscAP,title="Height (AP) - Disc",ylabel="inf-sup height [mm]")
 runSPM1D(Yc=YcDiscLAT,Yk=YkDiscLAT,lvlRange=lvlRangeDiscLAT,title="Height (LAT) - Disc",ylabel="inf-sup height [mm]")
 runSPM1D(Yc=YcDiscZ,Yk=YkDiscZ,lvlRange=lvlRangeDiscZ,title="CSA (Z) - Disc",ylabel="csa [mm³]")
+
+# Measuring relative mean percentile differences between control and kyphotic groups:
+vertAPPerDiffDist = (np.mean(YcVertAP, axis=0) - np.mean(YkVertAP, axis=0)) / np.mean(YkVertAP, axis=0) * 100
+vertLATPerDiffDist = (np.mean(YcVertLAT, axis=0) - np.mean(YkVertLAT, axis=0)) / np.mean(YkVertLAT, axis=0) * 100
+vertZPerDiffDist = (np.mean(YcVertZ, axis=0) - np.mean(YkVertZ, axis=0)) / np.mean(YkVertZ, axis=0) * 100
+
+discAPPerDiffDist = (np.mean(YcDiscAP, axis=0) - np.mean(YkDiscAP, axis=0)) / np.mean(YkDiscAP, axis=0) * 100
+discLATPerDiffDist = (np.mean(YcDiscLAT, axis=0) - np.mean(YkDiscLAT, axis=0)) / np.mean(YkDiscLAT, axis=0) * 100
+discZPerDiffDist = (np.mean(YcDiscZ, axis=0) - np.mean(YkDiscZ, axis=0)) / np.mean(YkDiscZ, axis=0) * 100
+
+# Max/min percentile differences:
+vertAPMax = np.max(vertAPPerDiffDist, where=~np.isnan(vertAPPerDiffDist), initial=-1)
+vertAPMin = np.min(vertAPPerDiffDist, where=~np.isnan(vertAPPerDiffDist), initial=100)
+
+vertLATMax = np.max(vertLATPerDiffDist, where=~np.isnan(vertLATPerDiffDist), initial=-1)
+vertLATMin = np.min(vertLATPerDiffDist, where=~np.isnan(vertLATPerDiffDist), initial=100)
+
+vertZMax = np.max(vertZPerDiffDist, where=~np.isnan(vertZPerDiffDist), initial=-1)
+vertZMin = np.min(vertZPerDiffDist, where=~np.isnan(vertZPerDiffDist), initial=100)
+
+discAPMax = np.max(discAPPerDiffDist, where=~np.isnan(discAPPerDiffDist), initial=-1)
+discAPMin = np.min(discAPPerDiffDist, where=~np.isnan(discAPPerDiffDist), initial=100)
+
+discLATMax = np.max(discLATPerDiffDist, where=~np.isnan(discLATPerDiffDist), initial=-1)
+discLATMin = np.min(discLATPerDiffDist, where=~np.isnan(discLATPerDiffDist), initial=100)
+
+discZMax = np.max(discZPerDiffDist, where=~np.isnan(discZPerDiffDist), initial=-1)
+discZMin = np.min(discZPerDiffDist, where=~np.isnan(discZPerDiffDist), initial=100)
+
+# Displaying results:
+print(f"Differences in vertebral AP height between control and kyphotic groups range from {vertAPMin:.2f} - {vertAPMax:.2f}%")
+print(f"Differences in vertebral LAT height between control and kyphotic groups range from {vertLATMin:.2f} - {vertLATMax:.2f}%")
+print(f"Differences in vertebral Z-plane CSA between control and kyphotic groups range from {vertZMin:.2f} - {vertZMax:.2f}%\n")
+
+print(f"Differences in disc AP height between control and kyphotic groups range from {discAPMin:.2f} - {discAPMax:.2f}%")
+print(f"Differences in disc LAT height between control and kyphotic groups range from {discLATMin:.2f} - {discLATMax:.2f}%")
+print(f"Differences in disc Z-plane CSA between control and kyphotic groups range from {discZMin:.2f} - {discZMax:.2f}%")
 
