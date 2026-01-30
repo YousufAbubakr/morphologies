@@ -1,5 +1,5 @@
 function [Tout, stats] = levelwiseTests(T, structure, levelRange, yvar, opts)
-% Perform level-wise t-tests from a summary table
+% Perform level-wise Mann-Whitney U tests from a summary table
 %
 % Inputs
 % ------
