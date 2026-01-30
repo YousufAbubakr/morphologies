@@ -1,22 +1,23 @@
 function plotLevelwiseStats(Tstats, structure, varargin)
-% Visualize level-wise summary statistics
+% Visualize level-wise nonparametric summary statistics
+% (median with interquartile range)
 %
 % Inputs
 % ------
-% Tstats    : output table from levelwiseTtests
+% Tstats    : output table from levelwiseNonparametricTests
 % structure : 'vertebra' or 'disc'
 %
 % Optional name-value:
-%   'UseQ'  : true (default) → significance from q-values
-%   'Alpha' : significance threshold (default 0.05)
-%   'Title' : custom title
-%   'YLabel': y-axis label
+%   'UseAdj' : true (default) → use adjusted p-values
+%   'Alpha'  : significance threshold (default 0.05)
+%   'Title'  : custom title
+%   'YLabel' : y-axis label
 
     % -------------------------
     % Options
     % -------------------------
     p = inputParser;
-    addParameter(p,'UseQ',true);
+    addParameter(p,'UseAdj',true);
     addParameter(p,'Alpha',0.05);
     addParameter(p,'Title','');
     addParameter(p,'YLabel','Measurement');
@@ -28,39 +29,56 @@ function plotLevelwiseStats(Tstats, structure, varargin)
     % -------------------------
     x = 1:height(Tstats);
     levels = Tstats.Level;
+    dx = 0;   % horizontal offset
 
+    % -------------------------
     % Significance mask
-    if opts.UseQ
-        sig = Tstats.qValue < opts.Alpha;
+    % -------------------------
+    if opts.UseAdj
+        sig = Tstats.Signif_adj;
     else
-        sig = Tstats.pValue < opts.Alpha;
+        sig = Tstats.Signif_p;
     end
 
     % -------------------------
     % Figure
     % -------------------------
     figure('Color','w','Position',[100 100 1000 450]);
-
     hold on
 
-    % --- Control ---
-    errorbar(x, Tstats.MeanC, Tstats.StdC, ...
-        'o-','Color',[0.8 0.2 0.2], ...
-        'MarkerFaceColor',[0.8 0.2 0.2], ...
-        'LineWidth',3);
+    % Colors
+    colC = [0.85 0.2 0.2];
+    colK = [0.2 0.2 0.85];
 
-    % --- Kyphotic ---
-    errorbar(x, Tstats.MeanK, Tstats.StdK, ...
-        'o-','Color',[0.2 0.2 0.8], ...
-        'MarkerFaceColor',[0.2 0.2 0.8], ...
-        'LineWidth',3);
+    % -------------------------
+    % Control IQR band
+    % -------------------------
+    fill([x-dx fliplr(x-dx)], ...
+         [Tstats.Q1C' fliplr(Tstats.Q3C')], ...
+         colC, 'FaceAlpha',0.25, 'EdgeColor','none');
 
-    % --- Significance markers ---
-    yMax = max([Tstats.MeanC + Tstats.StdC, ...
-                Tstats.MeanK + Tstats.StdK], [], 2);
-    yStar = yMax * 1.05;
+    % Control median
+    plot(x-dx, Tstats.MedianC, '-o', ...
+         'Color',colC, 'MarkerFaceColor',colC, 'LineWidth',3);
 
-    plot(x(sig), yStar(sig), 'k*', 'MarkerSize', 12)
+    % -------------------------
+    % Kyphotic IQR band
+    % -------------------------
+    fill([x+dx fliplr(x+dx)], ...
+         [Tstats.Q1K' fliplr(Tstats.Q3K')], ...
+         colK, 'FaceAlpha',0.25, 'EdgeColor','none');
+
+    % Kyphotic median
+    plot(x+dx, Tstats.MedianK, '-o', ...
+         'Color',colK, 'MarkerFaceColor',colK, 'LineWidth',3);
+
+    % -------------------------
+    % Significance markers
+    % -------------------------
+    yMax = max([Tstats.Q3C Tstats.Q3K],[],2);
+    yStar = yMax * 1.06;
+
+    plot(x(sig), yStar(sig), 'k*', 'MarkerSize',12, 'LineWidth',1.5)
 
     % -------------------------
     % Formatting
@@ -68,13 +86,13 @@ function plotLevelwiseStats(Tstats, structure, varargin)
     set(gca,'XTick',x,'XTickLabel',levels)
     xtickangle(45)
 
-    ylabel(opts.YLabel)
     xlabel('Spinal Level')
-    ymin = 0;
-    ylim([ymin Inf]);
-    xlim([min(x) Inf]);
-    
-    extraYAxisProps = false;
+    ylabel(opts.YLabel)
+
+    ylim([0 max(yStar)*1.1])
+    xlim([min(x)-0.5 max(x)+0.5])
+
+    extraYAxisProps = true;
     if extraYAxisProps
         % Get the current axes handle
         ax = gca;
@@ -86,15 +104,13 @@ function plotLevelwiseStats(Tstats, structure, varargin)
         ytickformat('%.0f');
     end
 
-    legend({'Control (mean ± SD)','Kyphotic (mean ± SD)','Significant'}, ...
-           'Location','best')
-
     if isempty(opts.Title)
         title(sprintf('Level-wise statistics (%s)',structure))
     else
         title(opts.Title)
     end
 
+    box on
     hold off
 end
 

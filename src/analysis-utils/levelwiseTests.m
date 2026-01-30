@@ -1,4 +1,4 @@
-function [Tout, stats] = levelwiseTtests(T, structure, levelRange, yvar, opts)
+function [Tout, stats] = levelwiseTests(T, structure, levelRange, yvar, opts)
 % Perform level-wise t-tests from a summary table
 %
 % Inputs
@@ -10,6 +10,7 @@ function [Tout, stats] = levelwiseTtests(T, structure, levelRange, yvar, opts)
 % structure : 'vertebra' or 'disc'
 % opts      : (optional) struct
 %             opts.alpha (default = 0.05)
+%             opts.multComp (default = 'bonferroni')
 %
 % Outputs
 % -------
@@ -24,7 +25,10 @@ function [Tout, stats] = levelwiseTtests(T, structure, levelRange, yvar, opts)
     end
     if ~isfield(opts,'alpha')
         opts.alpha = 0.05;
-        opts.Vartype = 'unequal';
+    end
+
+    if ~isfield(opts,'multComp')
+        opts.multComp = 'bonferroni';   % 'bonferroni'
     end
     
     % -----------------------------
@@ -44,9 +48,10 @@ function [Tout, stats] = levelwiseTtests(T, structure, levelRange, yvar, opts)
     % Preallocate
     % -------------------------
     nL = numel(levels);
-    meanC = nan(nL,1); stdC = nan(nL,1);
-    meanK = nan(nL,1); stdK = nan(nL,1);
-    tVals = nan(nL,1); pVals = nan(nL,1);
+
+    medC = nan(nL,1); q1C = nan(nL,1); q3C = nan(nL,1);
+    medK = nan(nL,1); q1K = nan(nL,1); q3K = nan(nL,1);
+    pVals = nan(nL,1);
     nC = nan(nL,1); nK = nan(nL,1);
 
     % -------------------------
@@ -58,45 +63,63 @@ function [Tout, stats] = levelwiseTtests(T, structure, levelRange, yvar, opts)
         Tc = T(T.LevelName == lvl & T.Group == 'control', :);
         Tk = T(T.LevelName == lvl & T.Group == 'kyphotic', :);
 
-        if height(Tc) < 2 || height(Tk) < 2
+        xc = Tc.(yvar);
+        xk = Tk.(yvar);
+
+        xc = xc(~isnan(xc));
+        xk = xk(~isnan(xk));
+
+        nC(i) = numel(xc);
+        nK(i) = numel(xk);
+
+        if nC(i) < 2 || nK(i) < 2
             continue
         end
 
-        meanC(i) = mean(Tc.(yvar),'omitnan');
-        stdC(i)  = std(Tc.(yvar),'omitnan');
-        nC(i) = sum(~isnan(Tc.(yvar)), 1); % control n per level
+        % Robust summaries
+        medC(i) = median(xc);
+        q1C(i)  = prctile(xc,25);
+        q3C(i)  = prctile(xc,75);
 
-        meanK(i) = mean(Tk.(yvar),'omitnan');
-        stdK(i)  = std(Tk.(yvar),'omitnan');
-        nK(i) = sum(~isnan(Tk.(yvar)), 1); % kyphotic n per level
+        medK(i) = median(xk);
+        q1K(i)  = prctile(xk,25);
+        q3K(i)  = prctile(xk,75);
 
-        [~, pVals(i), ~, s] = ttest2(Tc.(yvar), Tk.(yvar), ...
-                                        'Vartype', opts.Vartype, ...
-                                        'Alpha', opts.alpha);
-        tVals(i) = s.tstat;
+        % Mann–Whitney U test
+        pVals(i) = ranksum(xc, xk);
     end
 
     % -------------------------
-    % FDR correction
+    % Multiple-comparison correction
     % -------------------------
-    qVals = fdrBH(pVals);
+    switch lower(opts.multComp)
+    
+        case 'bonferroni'
+            m = sum(~isnan(pVals));          % number of valid tests
+            adjVals = min(pVals * m, 1);     % Bonferroni-adjusted p
+            adjLabel = 'pBonf';
+    
+        otherwise
+            error('Unknown multiple-comparison method: %s', opts.multComp);
+    end
 
-    % -------------------------
-    % Output table
-    % -------------------------
     Tout = table( ...
         levels(:), ...
-        meanC, stdC, ...
-        meanK, stdK, ...
-        meanC - meanK, ...
+        medC, q1C, q3C, ...
+        medK, q1K, q3K, ...
+        medC - medK, ...
         nC, nK, ...
-        tVals, pVals, qVals, ...
+        pVals, adjVals, ...
         pVals < opts.alpha, ...
-        qVals < opts.alpha, ...
+        adjVals < opts.alpha, ...
         'VariableNames', { ...
-            'Level','MeanC','StdC','MeanK','StdK', ...
-            'Diff','numControl','numKyphotic','tValue', ...
-            'pValue','qValue','Signif_p','Signif_q'});
+            'Level', ...
+            'MedianC','Q1C','Q3C', ...
+            'MedianK','Q1K','Q3K', ...
+            'MedianDiff', ...
+            'numControl','numKyphotic', ...
+            'pValue', adjLabel, ...
+            'Signif_p','Signif_adj'});
 
     % -------------------------
     % Stats struct
@@ -105,7 +128,9 @@ function [Tout, stats] = levelwiseTtests(T, structure, levelRange, yvar, opts)
     stats.structure = structure;
     stats.levels    = levels;
     stats.alpha     = opts.alpha;
-    stats.method    = 'Level-wise t-tests with BH-FDR';
+    stats.method    = sprintf( ...
+                        'Level-wise Mann–Whitney U tests with %s correction', ...
+                        upper(opts.multComp));
     stats.table     = Tout;
 end
 

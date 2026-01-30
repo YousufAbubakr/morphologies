@@ -71,34 +71,32 @@ levelRange = cfg.summary.levelsExported;
 
 % ---- VOLUME ----
 % Computing level-wise t-tests from volume summary table:
-[TvolVertStats, volVertStats] = levelwiseTtests(Tvolume, 'vertebra', levelRange, 'Volume');
-[TvolDiscStats, volDiscStats] = levelwiseTtests(Tvolume, 'disc', levelRange, 'Volume');
+[TvolVertStats, volVertStats] = levelwiseTests(Tvolume, 'vertebra', levelRange, 'Volume');
+[TvolDiscStats, volDiscStats] = levelwiseTests(Tvolume, 'disc', levelRange, 'Volume');
 
 % Visualizing level-wise t-tests from volume summary table:
 plotLevelwiseStats( ...
     TvolVertStats, 'vertebra', ...
     'YLabel','Volume (mm^3)', ...
-    'Title','Vertebral Body Volume (Level-wise)', ...
-    'UseQ', true);
+    'Title','Vertebral Body Volume (Level-wise)');
 plotLevelwiseStats( ...
     TvolDiscStats, 'disc', ...
     'YLabel','Volume (mm^3)', ...
-    'Title','Disc Body Volume (Level-wise)', ...
-    'UseQ', true);
+    'Title','Disc Body Volume (Level-wise)');
 
 % Reporting increases in volume/level data (mm^3/level):
-fprintf('Control vertebral body volume increases by an average of %f mm^3/level!\n', mean(diff(TvolVertStats.MeanC)))
-fprintf('Kyphotic vertebral body volume increases by an average of %f mm^3/level!\n', mean(diff(TvolVertStats.MeanK)))
+fprintf('Control vertebral body volume increases by an average of %f mm^3/level!\n', mean(diff(TvolVertStats.MedianC)))
+fprintf('Kyphotic vertebral body volume increases by an average of %f mm^3/level!\n', mean(diff(TvolVertStats.MedianK)))
 
-fprintf('Control disc body volume increases by an average of %f mm^3/level!\n', mean(diff(TvolDiscStats.MeanC)))
-fprintf('Kyphotic disc body volume increases by an average of %f mm^3/level!\n', mean(diff(TvolDiscStats.MeanK)))
+fprintf('Control disc body volume increases by an average of %f mm^3/level!\n', mean(diff(TvolDiscStats.MedianC)))
+fprintf('Kyphotic disc body volume increases by an average of %f mm^3/level!\n', mean(diff(TvolDiscStats.MedianK)))
 
 % Reporting relative difference between control and kyphotic (%):
-maxRelDiffVert = max((TvolVertStats.MeanC - TvolVertStats.MeanK)./TvolVertStats.MeanK * 100);
-minRelDiffVert = min((TvolVertStats.MeanC - TvolVertStats.MeanK)./TvolVertStats.MeanK * 100);
+maxRelDiffVert = max((TvolVertStats.MedianC - TvolVertStats.MedianK)./TvolVertStats.MedianK * 100);
+minRelDiffVert = min((TvolVertStats.MedianC - TvolVertStats.MedianK)./TvolVertStats.MedianK * 100);
 
-maxRelDiffDisc = max((TvolDiscStats.MeanC - TvolDiscStats.MeanK)./TvolDiscStats.MeanK * 100);
-minRelDiffDisc = min((TvolDiscStats.MeanC - TvolDiscStats.MeanK)./TvolDiscStats.MeanK * 100);
+maxRelDiffDisc = max((TvolDiscStats.MedianC - TvolDiscStats.MedianK)./TvolDiscStats.MedianK * 100);
+minRelDiffDisc = min((TvolDiscStats.MedianC - TvolDiscStats.MedianK)./TvolDiscStats.MedianK * 100);
 
 fprintf(['Vertebral body volumes from control specimens were %f - %f %% ' ...
     'greater than kyphotic vertebral bodies at every level!\n'], minRelDiffVert, maxRelDiffVert)
@@ -109,35 +107,31 @@ fprintf(['Disc body volumes from control specimens were %f - %f %% ' ...
 axes = {'LAT','AP'};
 
 % Computing level-wise t-tests from height ratio summary table, vertebra; both axes:
-[ThrsLATVertStats, hrsLATVertStats] = levelwiseTtests(Theightrs(Theightrs.Axis == axes{1},:), 'vertebra', levelRange, 'HeightR');
-[ThrsAPVertStats, hrsAPVertStats]   = levelwiseTtests(Theightrs(Theightrs.Axis == axes{2},:), 'vertebra', levelRange, 'HeightR');
+[ThrsLATVertStats, hrsLATVertStats] = levelwiseTests(Theightrs(Theightrs.Axis == axes{1},:), 'vertebra', levelRange, 'HeightR');
+[ThrsAPVertStats, hrsAPVertStats]   = levelwiseTests(Theightrs(Theightrs.Axis == axes{2},:), 'vertebra', levelRange, 'HeightR');
 
 % disc; both axes:
-[ThrsLATDiscStats, hrsLATDiscStats] = levelwiseTtests(Theightrs(Theightrs.Axis == axes{1},:), 'disc', levelRange, 'HeightR');
-[ThrsAPDiscStats, hrsAPDiscStats]   = levelwiseTtests(Theightrs(Theightrs.Axis == axes{2},:), 'disc', levelRange, 'HeightR');
+[ThrsLATDiscStats, hrsLATDiscStats] = levelwiseTests(Theightrs(Theightrs.Axis == axes{1},:), 'disc', levelRange, 'HeightR');
+[ThrsAPDiscStats, hrsAPDiscStats]   = levelwiseTests(Theightrs(Theightrs.Axis == axes{2},:), 'disc', levelRange, 'HeightR');
 
 % Visualizing level-wise t-tests from height ratio summary tables:
 plotLevelwiseStats( ...
     ThrsLATVertStats, 'vertebra', ...
     'YLabel','Height Ratio (mm/mm)', ...
-    'Title','Vertebral LAT Height Ratio (Level-wise)', ...
-    'UseQ', true);
+    'Title','Vertebral LAT Height Ratio (Level-wise)');
 plotLevelwiseStats( ...
     ThrsAPVertStats, 'vertebra', ...
     'YLabel','Height Ratio (mm/mm)', ...
-    'Title','Vertebral AP Height Ratio (Level-wise)', ...
-    'UseQ', true);
+    'Title','Vertebral AP Height Ratio (Level-wise)');
 
 plotLevelwiseStats( ...
     ThrsLATDiscStats, 'disc', ...
     'YLabel','Height Ratio (mm/mm)', ...
-    'Title','Disc LAT Height Ratio (Level-wise)', ...
-    'UseQ', true);
+    'Title','Disc LAT Height Ratio (Level-wise)');
 plotLevelwiseStats( ...
     ThrsAPDiscStats, 'disc', ...
     'YLabel','Height Ratio (mm/mm)', ...
-    'Title','Disc AP Height Ratio (Level-wise)', ...
-    'UseQ', true);
+    'Title','Disc AP Height Ratio (Level-wise)');
 
 %% SPM EXTRACT
 % Extracting SPM-ready matrices from the measumrent tables
